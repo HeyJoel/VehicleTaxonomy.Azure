@@ -1,0 +1,51 @@
+// Copied from Cofoundry under MIT Licence
+// https://github.com/cofoundry-cms/cofoundry/blob/master/src/Cofoundry.Domain/Domain/Shared/Models/Assets/FormFileSource.cs
+
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+
+namespace VehicleTaxonomy.Azure.Domain;
+
+/// <summary>
+/// Cofoundry <see cref="IFileSource"/> abstraction over an ASP.NET 
+/// <see cref="IFormFile"/>.
+/// </summary>
+public class FormFileSource : IFileSource
+{
+    private readonly IFormFile _formFile;
+
+    public FormFileSource(IFormFile formFile)
+    {
+        ArgumentNullException.ThrowIfNull(formFile);
+
+        _formFile = formFile;
+
+        FileName = _formFile.FileName;
+        MimeType = _formFile.ContentType;
+        FileLength = _formFile.Length;
+    }
+
+    /// <summary>
+    /// The name of the file including file extension (if available). The
+    /// file name is specified by the client and so cannot be trusted.
+    /// </summary>
+    [Required]
+    public string FileName { get; private set; }
+
+    /// <summary>
+    /// The mime/content type associated with the file. This is specified 
+    /// by the client and is not to be trusted.
+    /// </summary>
+    public string MimeType { get; private set; }
+
+    /// <summary>
+    /// The total length of the file in bytes.
+    /// </summary>
+    public long FileLength { get; private set; }
+
+    /// <inheritdoc/>
+    public Task<Stream> OpenReadStreamAsync()
+    {
+        return Task.FromResult(_formFile.OpenReadStream());
+    }
+}

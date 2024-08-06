@@ -1,0 +1,19 @@
+meta {
+  name: Import
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/data-import/taxonomy
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: text/csv
+}
+
+body:multipart-form {
+  file: @file(C:\Dev\Examples\VehicleTaxonomy.Azure\data\MakesModelsFuelType.csv)
+}
