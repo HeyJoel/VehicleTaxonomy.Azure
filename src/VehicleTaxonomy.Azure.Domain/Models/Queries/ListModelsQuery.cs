@@ -1,5 +1,8 @@
 namespace VehicleTaxonomy.Azure.Domain.Models;
 
+/// <summary>
+/// Lists all the models that belong to a specific make.
+/// </summary>
 public class ListModelsQuery
 {
     /// <summary>

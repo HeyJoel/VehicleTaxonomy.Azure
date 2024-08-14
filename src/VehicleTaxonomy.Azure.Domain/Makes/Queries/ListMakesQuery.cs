@@ -1,5 +1,8 @@
 namespace VehicleTaxonomy.Azure.Domain.Makes;
 
+/// <summary>
+/// Lists all makes, optionally filtered by name.
+/// </summary>
 public class ListMakesQuery
 {
     /// <summary>

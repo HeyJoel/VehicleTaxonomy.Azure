@@ -1,5 +1,8 @@
 namespace VehicleTaxonomy.Azure.Domain.Makes;
 
+/// <summary>
+/// Determine if the name or derived public id of a make already exists in the system.
+/// </summary>
 public class IsMakeUniqueQuery
 {
     /// <summary>

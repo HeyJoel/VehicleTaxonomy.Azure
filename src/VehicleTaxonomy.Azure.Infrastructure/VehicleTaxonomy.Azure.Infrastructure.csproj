@@ -9,15 +9,11 @@
     <InternalsVisibleTo Include="VehicleTaxonomy.Azure.Infrastructure.Tests" />
   </ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.21.2" />
 		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.42.0" />
 		<PackageReference Include="Sep" Version="0.5.3" />
 		<PackageReference Include="Sqids" Version="3.1.0" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="appsettings.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 
 </Project>

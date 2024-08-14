@@ -9,6 +9,14 @@ services:
             - "10250-10255:10250-10255"
         volumes:
             -  vol_cosmos:/data/db
+    azureite:
+        container_name: azurite
+        image: mcr.microsoft.com/azure-storage/azurite
+        ports:
+            - 18080:10000
+        volumes:
+            - vol_cosmos:/workspace
         
 volumes:
     vol_cosmos:
+    vol_azureite:

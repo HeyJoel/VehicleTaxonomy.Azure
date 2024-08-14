@@ -12,15 +12,15 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
         Alphabet = "7eknlt3fiwdgmscayzq56phbjrxuo2v4",
     });
 
-    private readonly CosmosClient _cosmosClient;
+    private readonly CosmosDbClientFactory _cosmosDbClientFactory;
     private readonly CosmosDbOptions _cosmosDbOptions;
 
     public VehicleTaxonomyRepository(
-        CosmosClient cosmosClient,
+        CosmosDbClientFactory cosmosDbClientFactory,
         CosmosDbOptions cosmosDbOptions
         )
     {
-        _cosmosClient = cosmosClient;
+        _cosmosDbClientFactory = cosmosDbClientFactory;
         _cosmosDbOptions = cosmosDbOptions;
     }
 
@@ -43,7 +43,7 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
 
     public async Task AddOrUpdateBatchAsync(IEnumerable<VehicleTaxonomyDocument> taxonomies, CancellationToken cancellationToken = default)
     {
-        var container = GetContainer();
+        var container = GetContainer(true);
 
         var concurrentTasks = new List<Task>();
         foreach (var taxonomy in taxonomies)
@@ -134,9 +134,10 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
         return result;
     }
 
-    private Container GetContainer()
+    private Container GetContainer(bool allowBulkExecution = false)
     {
-        var container = _cosmosClient.GetContainer(
+        var cosmosClient = _cosmosDbClientFactory.Get(allowBulkExecution);
+        var container = cosmosClient.GetContainer(
             _cosmosDbOptions.DatabaseName,
             VehicleTaxonomyContainerDefinition.Instance.ContainerName
             );
@@ -170,7 +171,7 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
         var fullPath = $"{parentPath}/{publicId}";
         var bytes = Encoding.UTF8.GetBytes(fullPath);
 
-        // hash and encode as it is recommended to use alphanumeric characters only for full compatibility
+        // hash and encode as it is recommended to only use alphanumeric characters for full compatibility with other systems
         var hash = SHA1.HashData(bytes);
         var id = _sqidsEncoder.Encode(hash);
 

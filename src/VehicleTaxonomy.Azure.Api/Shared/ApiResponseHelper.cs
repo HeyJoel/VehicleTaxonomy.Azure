@@ -8,42 +8,80 @@ public static class ApiResponseHelper
 {
     public static IActionResult ToResult<TResult>(QueryResponse<TResult> queryResponse)
     {
-        var apiResponse = new ApiResponse()
+        ArgumentNullException.ThrowIfNull(queryResponse);
+
+        var apiResponse = new ApiResponse<TResult>()
         {
             IsValid = queryResponse.IsValid,
             Result = queryResponse.Result,
             ValidationErrors = queryResponse.ValidationErrors,
         };
 
-        return ToResult(queryResponse, apiResponse);
+        return ToActionResult(apiResponse);
     }
 
     public static IActionResult ToResult<TResult>(CommandResponse<TResult> commandResponse)
     {
-        var apiResponse = new ApiResponse()
+        ArgumentNullException.ThrowIfNull(commandResponse);
+
+        var apiResponse = new ApiResponse<TResult>()
         {
             IsValid = commandResponse.IsValid,
             Result = commandResponse.Result,
             ValidationErrors = commandResponse.ValidationErrors,
         };
 
-        return ToResult(commandResponse, apiResponse);
+        return ToActionResult(apiResponse);
+    }
+
+    public static IActionResult ToResult<TResult>(TResult result)
+    {
+        var apiResponse = new ApiResponse<TResult>()
+        {
+            IsValid = true,
+            Result = result
+        };
+
+        return ToActionResult(apiResponse);
     }
 
     public static IActionResult ToResult(CommandResponse commandResponse)
     {
-        var apiResponse = new ApiResponse()
+        ArgumentNullException.ThrowIfNull(commandResponse);
+
+        var apiResponse = new ApiResponse<object>()
         {
             IsValid = commandResponse.IsValid,
             ValidationErrors = commandResponse.ValidationErrors,
         };
 
-        return ToResult(commandResponse, apiResponse);
+        return ToActionResult(apiResponse);
     }
 
-    private static IActionResult ToResult(ICommandOrQueryResponse commandOrQueryResponse, ApiResponse apiResponse)
+    public static IActionResult ValidationError(ValidationError error)
     {
-        if (commandOrQueryResponse.IsValid)
+        ArgumentNullException.ThrowIfNull(error);
+
+        var apiResponse = new ApiResponse<object>()
+        {
+            IsValid = false,
+            ValidationErrors = [error],
+        };
+
+        return ToActionResult(apiResponse);
+    }
+
+    public static IActionResult Success()
+    {
+        return ToActionResult(new ApiResponse<object>()
+        {
+            IsValid = true
+        });
+    }
+
+    private static IActionResult ToActionResult<TResult>(ApiResponse<TResult> apiResponse)
+    {
+        if (apiResponse.IsValid)
         {
             return new OkObjectResult(apiResponse);
         }

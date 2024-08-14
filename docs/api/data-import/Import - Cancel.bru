@@ -1,0 +1,19 @@
+meta {
+  name: Import - Cancel
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/data-import/taxonomy/01J55P6R2GPRV814NC83RDTSBB/cancel
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: text/csv
+}
+
+body:multipart-form {
+  file: @file(C:\Dev\Examples\VehicleTaxonomy.Azure\data\MakesModelsFuelType.csv)
+}

@@ -1,5 +1,9 @@
 namespace VehicleTaxonomy.Azure.Domain.Models;
 
+/// <summary>
+/// Create a new model. If a model with the same name and make already exists then a
+/// validation error is returned.
+/// </summary>
 public class AddModelCommand
 {
     /// <summary>

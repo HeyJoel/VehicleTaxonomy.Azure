@@ -1,5 +1,9 @@
 namespace VehicleTaxonomy.Azure.Domain.Variants;
 
+/// <summary>
+/// Determine if the name or name-derived id of a variant already exists for the
+/// specified make and model.
+/// </summary>
 public class IsVariantUniqueQuery
 {
     /// <summary>

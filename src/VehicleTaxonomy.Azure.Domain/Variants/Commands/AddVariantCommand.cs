@@ -2,6 +2,10 @@ using System.Text.Json.Serialization;
 
 namespace VehicleTaxonomy.Azure.Domain.Variants;
 
+/// <summary>
+/// Create a new variant. If a variant with the same name, make and model already exists
+/// then a validation error is returned.
+/// </summary>
 public class AddVariantCommand
 {
     /// <summary>

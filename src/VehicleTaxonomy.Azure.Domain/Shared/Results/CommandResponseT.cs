@@ -13,6 +13,12 @@ namespace VehicleTaxonomy.Azure.Domain;
 /// </summary>
 public class CommandResponse<TResult> : ICommandOrQueryResponse
 {
+    public CommandResponse()
+    {
+        IsValid = true;
+        ValidationErrors = [];
+    }
+
     public CommandResponse(TResult result)
     {
         if (result == null)

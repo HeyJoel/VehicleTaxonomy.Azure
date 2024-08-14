@@ -1,5 +1,9 @@
 namespace VehicleTaxonomy.Azure.Domain.Models;
 
+/// <summary>
+/// Delete an existing model. If the model does not exist then a validation
+/// error is returned.
+/// </summary>
 public class DeleteModelCommand
 {
     /// <summary>

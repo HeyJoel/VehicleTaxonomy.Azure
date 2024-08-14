@@ -9,15 +9,15 @@ namespace VehicleTaxonomy.Azure.Infrastructure.Db;
 /// </summary>
 public class CosmosDbContainerInitializer
 {
-    private readonly CosmosClient _cosmosClient;
+    private readonly CosmosDbClientFactory _cosmosDbClientFactory;
     private readonly CosmosDbOptions _cosmosDbOptions;
 
     public CosmosDbContainerInitializer(
-        CosmosClient cosmosClient,
+        CosmosDbClientFactory cosmosDbClientFactory,
         CosmosDbOptions cosmosDbOptions
         )
     {
-        _cosmosClient = cosmosClient;
+        _cosmosDbClientFactory = cosmosDbClientFactory;
         _cosmosDbOptions = cosmosDbOptions;
     }
 
@@ -49,7 +49,8 @@ public class CosmosDbContainerInitializer
 
     private async Task<Database> CreateDbIfNotExists()
     {
-        var databaseResponse = await _cosmosClient.CreateDatabaseIfNotExistsAsync(_cosmosDbOptions.DatabaseName, 400);
+        var cosmosClient = _cosmosDbClientFactory.Get();
+        var databaseResponse = await cosmosClient.CreateDatabaseIfNotExistsAsync(_cosmosDbOptions.DatabaseName, 400);
         var database = databaseResponse.Database;
 
         return database;

@@ -1,5 +1,8 @@
 namespace VehicleTaxonomy.Azure.Domain.Variants;
 
+/// <summary>
+/// Lists all the variants that belong to a specific model.
+/// </summary>
 public class ListVariantsQuery
 {
     /// <summary>

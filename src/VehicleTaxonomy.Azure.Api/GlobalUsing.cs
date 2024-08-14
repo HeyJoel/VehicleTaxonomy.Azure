@@ -1,6 +1,11 @@
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Azure.Functions.Worker;
+global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
+global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
+global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Resolvers;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.OpenApi.Models;
 global using VehicleTaxonomy.Azure.Domain;
 global using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;

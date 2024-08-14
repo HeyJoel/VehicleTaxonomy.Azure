@@ -1,5 +1,9 @@
 namespace VehicleTaxonomy.Azure.Domain.Variants;
 
+/// <summary>
+/// Delete an existing variant. If the variant does not exist then a validation
+/// error is returned.
+/// </summary>
 public class DeleteVariantCommand
 {
     /// <summary>

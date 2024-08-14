@@ -57,7 +57,6 @@ public sealed class DbDependentFixture : IAsyncLifetime
                 ]);
         }
 
-
         var configuration = BuildConfiguration(additionalConfig);
         var services = new ServiceCollection();
 

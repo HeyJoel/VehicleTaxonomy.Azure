@@ -1,5 +1,9 @@
 namespace VehicleTaxonomy.Azure.Domain.Models;
 
+/// <summary>
+/// Determine if the name or name-derived id of a model already exists for the
+/// specified make.
+/// </summary>
 public class IsModelUniqueQuery
 {
     /// <summary>
