@@ -72,6 +72,8 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: appPlan.id
     siteConfig: {
+      ftpsState: 'Disabled'
+      minTlsVersion: '1.2'
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
@@ -90,16 +92,12 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           value: '~4'
         }
         {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~14'
-        }
-        {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: applicationInsights.properties.InstrumentationKey
         }
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
+          value: 'dotnet-isolated'
         }
         {
           name: 'BlobStorage:ConnectionString'
@@ -113,9 +111,15 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'CosmosDb:DatabaseName'
           value: cosmosDbDatabaseName
         }
+        {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: '1'
+        }
+        {
+          name: 'WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED' 
+          value: '1'
+        }
       ]
-      ftpsState: 'FtpsOnly'
-      minTlsVersion: '1.2'
     }
     httpsOnly: true
   }

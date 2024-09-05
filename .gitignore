@@ -89,4 +89,5 @@ appsettings.local.json
 docs/api/environments/*.bru
 /docker
 .~lock.*
-.aws-sam/
+src/VehicleTaxonomy.Azure.Api/Properties/serviceDependencies.func-*.json
+src/VehicleTaxonomy.Azure.Api/Properties/ServiceDependencies/func-*
