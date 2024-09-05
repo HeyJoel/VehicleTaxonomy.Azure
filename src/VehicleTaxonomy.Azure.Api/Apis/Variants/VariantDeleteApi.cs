@@ -39,7 +39,7 @@ public class VariantDeleteApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(VariantDelete))]
     public async Task<IActionResult> VariantDelete(
-        [HttpTrigger(AuthorizationLevel.Function, "delete", Route = VariantApiConstants.RoutePrefix + "/{variantId}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = VariantApiConstants.RoutePrefix + "/{variantId}")] HttpRequest req,
         string makeId,
         string modelId,
         string variantId,

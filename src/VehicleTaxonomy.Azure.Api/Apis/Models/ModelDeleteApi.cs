@@ -33,7 +33,7 @@ public class ModelDeleteApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(ModelDelete))]
     public async Task<IActionResult> ModelDelete(
-        [HttpTrigger(AuthorizationLevel.Function, "delete", Route = ModelApiConstants.RoutePrefix + "/{modelId}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = ModelApiConstants.RoutePrefix + "/{modelId}")] HttpRequest req,
         string makeId,
         string modelId,
         CancellationToken cancellationToken

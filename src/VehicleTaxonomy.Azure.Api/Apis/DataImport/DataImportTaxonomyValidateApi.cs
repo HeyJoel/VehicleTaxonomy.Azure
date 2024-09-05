@@ -32,7 +32,7 @@ public class DataImportTaxonomyValidateApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(DataImportTaxonomyValidate))]
     public async Task<IActionResult> DataImportTaxonomyValidate(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = DataImportApiConstants.RoutePrefix + "/taxonomy/validate")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = DataImportApiConstants.RoutePrefix + "/taxonomy/validate")] HttpRequest req,
         CancellationToken cancellationToken
         )
     {

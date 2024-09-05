@@ -18,7 +18,7 @@ public class DataImportTaxonomyCancelApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(DataImportTaxonomyCancel))]
     public async Task<IActionResult> DataImportTaxonomyCancel(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = DataImportApiConstants.RoutePrefix + "/taxonomy/{instanceId}/cancel")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = DataImportApiConstants.RoutePrefix + "/taxonomy/{instanceId}/cancel")] HttpRequest req,
         [DurableClient] DurableTaskClient durableTaskClient,
         string instanceId,
         CancellationToken cancellationToken

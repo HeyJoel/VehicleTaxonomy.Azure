@@ -37,7 +37,7 @@ public class VariantAddApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(VariantAdd))]
     public async Task<IActionResult> VariantAdd(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = VariantApiConstants.RoutePrefix)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = VariantApiConstants.RoutePrefix)] HttpRequest req,
         string makeId,
         string modelId,
         AddVariantCommand command,

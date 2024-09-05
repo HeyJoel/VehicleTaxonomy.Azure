@@ -25,7 +25,7 @@ public class MakeAddApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(MakeAdd))]
     public async Task<IActionResult> MakeAdd(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = MakeApiConstants.RoutePrefix)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = MakeApiConstants.RoutePrefix)] HttpRequest req,
         [FromBody] AddMakeCommand command,
         CancellationToken cancellationToken
         )

@@ -36,7 +36,7 @@ public class ModelIsUniqueApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(ModelIsUnique))]
     public async Task<IActionResult> ModelIsUnique(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = ModelApiConstants.RoutePrefix + "/is-unique")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ModelApiConstants.RoutePrefix + "/is-unique")] HttpRequest req,
         string makeId,
         string? name,
         CancellationToken cancellationToken

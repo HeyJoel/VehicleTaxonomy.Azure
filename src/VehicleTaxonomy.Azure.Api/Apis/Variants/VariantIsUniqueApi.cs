@@ -42,7 +42,7 @@ public class VariantIsUniqueApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(VariantIsUnique))]
     public async Task<IActionResult> VariantIsUnique(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = VariantApiConstants.RoutePrefix + "/is-unique")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = VariantApiConstants.RoutePrefix + "/is-unique")] HttpRequest req,
         string makeId,
         string modelId,
         string? name,

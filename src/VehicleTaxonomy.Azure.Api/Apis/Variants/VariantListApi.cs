@@ -35,7 +35,7 @@ public class VariantListApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(VariantList))]
     public async Task<IActionResult> VariantList(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = VariantApiConstants.RoutePrefix)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = VariantApiConstants.RoutePrefix)] HttpRequest req,
         string makeId,
         string modelId,
         CancellationToken cancellationToken

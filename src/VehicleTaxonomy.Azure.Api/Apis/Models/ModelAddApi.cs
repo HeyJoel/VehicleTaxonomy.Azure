@@ -31,7 +31,7 @@ public class ModelAddApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(ModelAdd))]
     public async Task<IActionResult> ModelAdd(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = ModelApiConstants.RoutePrefix)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = ModelApiConstants.RoutePrefix)] HttpRequest req,
         string makeId,
         [FromBody] AddModelCommand command,
         CancellationToken cancellationToken

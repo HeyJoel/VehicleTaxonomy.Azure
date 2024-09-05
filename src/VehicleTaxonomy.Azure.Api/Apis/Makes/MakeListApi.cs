@@ -27,7 +27,7 @@ public class MakeListApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(MakeList))]
     public async Task<IActionResult> MakeList(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = MakeApiConstants.RoutePrefix)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = MakeApiConstants.RoutePrefix)] HttpRequest req,
         string? name,
         CancellationToken cancellationToken
         )

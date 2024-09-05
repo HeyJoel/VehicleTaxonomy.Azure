@@ -29,7 +29,7 @@ public class ModelListApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(ModelList))]
     public async Task<IActionResult> ModelList(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = ModelApiConstants.RoutePrefix)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ModelApiConstants.RoutePrefix)] HttpRequest req,
         string makeId,
         CancellationToken cancellationToken
         )

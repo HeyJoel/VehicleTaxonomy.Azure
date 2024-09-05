@@ -37,7 +37,7 @@ public class DataImportTaxonomyApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(DataImportTaxonomy))]
     public async Task<IActionResult> DataImportTaxonomy(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = DataImportApiConstants.RoutePrefix + "/taxonomy")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = DataImportApiConstants.RoutePrefix + "/taxonomy")] HttpRequest req,
         [DurableClient] DurableTaskClient durableTaskClient,
         CancellationToken cancellationToken
         )

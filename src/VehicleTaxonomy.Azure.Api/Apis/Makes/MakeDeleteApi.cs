@@ -27,7 +27,7 @@ public class MakeDeleteApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(MakeDelete))]
     public async Task<IActionResult> MakeDelete(
-        [HttpTrigger(AuthorizationLevel.Function, "delete", Route = MakeApiConstants.RoutePrefix + "/{makeId}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = MakeApiConstants.RoutePrefix + "/{makeId}")] HttpRequest req,
         string makeId,
         CancellationToken cancellationToken
         )

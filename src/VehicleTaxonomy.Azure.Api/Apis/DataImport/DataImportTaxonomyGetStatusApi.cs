@@ -21,7 +21,7 @@ public class DataImportTaxonomyGetStatusApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(DataImportTaxonomyGetStatus))]
     public async Task<IActionResult> DataImportTaxonomyGetStatus(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = DataImportApiConstants.RoutePrefix + "/taxonomy/{instanceId}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = DataImportApiConstants.RoutePrefix + "/taxonomy/{instanceId}")] HttpRequest req,
         [DurableClient] DurableTaskClient durableTaskClient,
         string instanceId,
         CancellationToken cancellationToken

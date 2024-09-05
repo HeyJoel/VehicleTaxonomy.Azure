@@ -30,7 +30,7 @@ public class MakeIsUniqueApi
     [OpenApiStandardValidationErrorResponse]
     [Function(nameof(MakeIsUnique))]
     public async Task<IActionResult> MakeIsUnique(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = MakeApiConstants.RoutePrefix + "/is-unique")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = MakeApiConstants.RoutePrefix + "/is-unique")] HttpRequest req,
         string? name,
         CancellationToken cancellationToken
         )
