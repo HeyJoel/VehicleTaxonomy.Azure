@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-@description('The location to deploy the project e.g. "eastus"')
+@description('The location to deploy the project e.g. "eastus2"')
 param location string
 
 @description('The application deployment environment. Currently only "dev" environment is supported.')
@@ -33,6 +33,5 @@ module resources 'resources.bicep' = {
 }
 
 output resourceGroupName string = resourceGroup.name
-
 output functionAppName string = resources.outputs.functionAppName
 output functionBaseUrl string = resources.outputs.functionBaseUrl

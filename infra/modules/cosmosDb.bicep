@@ -67,6 +67,9 @@ resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
             indexingMode: 'consistent'
             includedPaths: [
               {
+                path: '/parentPath/?'
+              }
+              {
                 path: '/name/?'
               }
             ]

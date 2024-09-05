@@ -28,6 +28,7 @@ public class VehicleTaxonomyContainerDefinition : ICosmosDbContainerDefinition
 
         // Use include-only indexing to save RUs on writes
         containerProperties.IndexingPolicy.ExcludedPaths.Add(new() { Path = "/*" });
+        containerProperties.IndexingPolicy.IncludedPaths.Add(new() { Path = "/parentPath/?" });
         containerProperties.IndexingPolicy.IncludedPaths.Add(new() { Path = "/name/?" });
 
         return containerProperties;

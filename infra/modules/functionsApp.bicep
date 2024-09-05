@@ -24,7 +24,6 @@ var configMap = {
 var config = configMap[environmentType]
 var functionAppName = toLower(take('func-${project}-${environmentType}-${uniqueSuffix}', 60))
 
-// TODO: RBAC? KeyVault? For now we can reference these resources as existing and use that to pass in CS etc
 resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' existing = {
   name: cosmosDbAccountName
 }
@@ -72,8 +71,9 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: appPlan.id
     siteConfig: {
-      ftpsState: 'Disabled'
+      ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
+      netFrameworkVersion: 'v8.0'
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
