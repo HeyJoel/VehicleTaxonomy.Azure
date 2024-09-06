@@ -1,3 +1,6 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace VehicleTaxonomy.Azure.Infrastructure.Db;
 
 /// <summary>
@@ -9,12 +12,14 @@ public class VehicleTaxonomyDocument
     /// <summary>
     /// Used to determine the entity type in the overload cosmos db container.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public VehicleTaxonomyEntity EntityType { get; set; }
 
     /// <summary>
-    /// The internal CosmosDb identifier for the entity, unique across all entity types. This is formed
-    /// from the complete partition key, which is then hashed and encoded - CosmosDb recommendation
-    /// is alpha-numerical only for interoperability with ADF, Spark, Kafka etc.
+    /// The internal CosmosDb identifier for the entity, unique across all entity types. This is
+    /// the full identity path (<see cref="ParentPath"/> plus <see cref="PublicId"/>), which is
+    /// then hashed and encoded because the CosmosDb recommendation is for alpha-numerical values
+    /// only (to allow for interoperability with ADF, Spark, Kafka etc).
     /// </summary>
     /// <remarks>
     /// Internal because this is calculated when a new entity is created.
