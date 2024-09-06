@@ -112,6 +112,14 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           value: cosmosDbDatabaseName
         }
         {
+          name: 'CosmosDb:BatchStrategy'
+          value: 'ParallelRequests'
+        }
+        {
+          name: 'CosmosDb:BatchStrategyMaxParallelRequests'
+          value: '2'
+        }
+        {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '1'
         }

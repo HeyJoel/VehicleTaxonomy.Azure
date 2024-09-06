@@ -4,6 +4,7 @@ using VehicleTaxonomy.Azure.Domain.DataImport;
 using VehicleTaxonomy.Azure.Domain.Tests.Makes;
 using VehicleTaxonomy.Azure.Domain.Tests.Models;
 using VehicleTaxonomy.Azure.Domain.Tests.Variants;
+using VehicleTaxonomy.Azure.Infrastructure.Db;
 
 namespace VehicleTaxonomy.Azure.Domain.Tests.DataImport;
 
@@ -26,7 +27,7 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
         var modelId = "abarth-124";
         var variantId = "124-gt-multiair-1-4l-petrol";
 
-        var scope = _dbDependentFixture.ServiceProvider.CreateScope();
+        using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ImportTaxonomyFromCsvCommandHandler>();
         var makeTestHelper = scope.ServiceProvider.GetRequiredService<MakeTestHelper>();
         var modelTestHelper = scope.ServiceProvider.GetRequiredService<ModelTestHelper>();
@@ -84,10 +85,21 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
                 """);
     }
 
-    [Fact]
-    public async Task WhenValidMultiRow_CanImport()
+    [Theory]
+    [InlineData(CosmosDbBatchStrategy.BulkExecution)]
+    [InlineData(CosmosDbBatchStrategy.ParallelRequests)]
+    public async Task WhenValidMultiRow_CanImport(CosmosDbBatchStrategy cosmosDbBatchStrategy)
     {
-        var scope = _dbDependentFixture.ServiceProvider.CreateScope();
+        using var serviceProvider = _dbDependentFixture.CreateServiceProvider(services =>
+        {
+            services.Configure<CosmosDbOptions>(c =>
+            {
+                c.BatchStrategy = cosmosDbBatchStrategy;
+                c.BatchStrategyMaxParallelRequests = 4;
+            });
+        });
+
+        using var scope = serviceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ImportTaxonomyFromCsvCommandHandler>();
 
         var response = await handler.ExecuteAsync(new()
@@ -123,7 +135,7 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
     {
         var makeId = "imptaxcsvch-modeval-notimp";
 
-        var scope = _dbDependentFixture.ServiceProvider.CreateScope();
+        using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ImportTaxonomyFromCsvCommandHandler>();
         var makeTestHelper = scope.ServiceProvider.GetRequiredService<MakeTestHelper>();
 
@@ -151,7 +163,7 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
     [Fact]
     public async Task WhenInvalidFile_ReturnsError()
     {
-        var scope = _dbDependentFixture.ServiceProvider.CreateScope();
+        using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ImportTaxonomyFromCsvCommandHandler>();
 
         var response = await handler.ExecuteAsync(new()

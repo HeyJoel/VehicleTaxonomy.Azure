@@ -57,10 +57,6 @@ public sealed class CosmosDbClientFactory : IDisposable
 
             // Don't hang around if we get a connection issue
             clientOptions.MaxRetryAttemptsOnRateLimitedRequests = 0;
-
-            // Note: Having issues with connection timouts on local with batch mode and large batches.
-            // Increasing the timeout does not seem to solve it.
-            //clientOptions.RequestTimeout = TimeSpan.FromSeconds(30);
         }
 
         return new CosmosClient(_cosmosDbOptions.ConnectionString, clientOptions);

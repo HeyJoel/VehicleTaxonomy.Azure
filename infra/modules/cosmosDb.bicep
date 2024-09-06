@@ -16,7 +16,7 @@ param tags { *: string }
 
 var configMap = {
   dev: {
-    databaseThroughput: 400
+    databaseThroughput: 1000
     useFreeTier: true
   }
 }

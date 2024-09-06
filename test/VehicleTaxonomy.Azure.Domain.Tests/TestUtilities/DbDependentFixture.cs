@@ -41,9 +41,18 @@ public sealed class DbDependentFixture : IAsyncLifetime
         await cosmosDbContainerInitializer.RebuildAsync(VehicleTaxonomyContainerDefinition.Instance);
     }
 
+    /// <summary>
+    /// A default service provider to use when no service customization is required.
+    /// </summary>
     public IServiceProvider ServiceProvider { get; private set; } = null!;
 
-    private ServiceProvider CreateServiceProvider()
+    /// <summary>
+    /// Create a new custom service provider instance.
+    /// </summary>
+    /// <param name="additionalRegistration">
+    /// Any additional service registration to apply after the default configuration.
+    /// </param>
+    public ServiceProvider CreateServiceProvider(Action<ServiceCollection>? additionalRegistration = null)
     {
         Action<IConfigurationBuilder>? additionalConfig = null;
 
@@ -67,6 +76,8 @@ public sealed class DbDependentFixture : IAsyncLifetime
             .AddScoped(s => new FakeTimeProvider(SeedDate))
             .AddScoped<TimeProvider>(s => s.GetRequiredService<FakeTimeProvider>());
 
+        additionalRegistration?.Invoke(services);
+
         return services.BuildServiceProvider();
     }
 
@@ -84,6 +95,7 @@ public sealed class DbDependentFixture : IAsyncLifetime
 
     public Task DisposeAsync()
     {
+        (ServiceProvider as IDisposable)?.Dispose();
         var task = _container?.DisposeAsync().AsTask();
 
         return task ?? Task.CompletedTask;

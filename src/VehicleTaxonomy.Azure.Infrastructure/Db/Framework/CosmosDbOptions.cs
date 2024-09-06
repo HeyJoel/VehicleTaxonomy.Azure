@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace VehicleTaxonomy.Azure.Infrastructure.Db;
 
 public class CosmosDbOptions
@@ -27,4 +29,18 @@ public class CosmosDbOptions
     /// should be ignored. Defaults to <see langword="false"/>.
     /// </summary>
     public bool UseLocalDb { get; set; }
+
+    /// <summary>
+    /// The request execution strategy to use when executing batch requests
+    /// against a CosmosDb container. Defaults to <see cref="CosmosDbBatchStrategy.ParallelRequests"/>
+    /// for best compatibility with low RU configurations.
+    /// </summary>
+    public CosmosDbBatchStrategy BatchStrategy { get; set; } = CosmosDbBatchStrategy.ParallelRequests;
+
+    /// <summary>
+    /// The maximum number of parallel requests to make when executing batchs of
+    /// requests using <see cref="CosmosDbBatchStrategy.ParallelRequests"/>.
+    /// </summary>
+    [Range(1, 1000)]
+    public int BatchStrategyMaxParallelRequests { get; set; } = 4;
 }

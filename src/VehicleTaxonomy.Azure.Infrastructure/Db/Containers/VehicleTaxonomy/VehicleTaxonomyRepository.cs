@@ -43,22 +43,46 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
 
     public async Task AddOrUpdateBatchAsync(IEnumerable<VehicleTaxonomyDocument> taxonomies, CancellationToken cancellationToken = default)
     {
-        var container = GetContainer(true);
+        if (_cosmosDbOptions.BatchStrategy == CosmosDbBatchStrategy.BulkExecution)
+        {
+            // BulkExecution strategy is included mainly for evaluation and experimentation.
+            // See CosmosDbBatchStrategy docs for more info.
 
-        var concurrentTasks = new List<Task>();
-        foreach (var taxonomy in taxonomies)
+            var container = GetContainer(true);
+            var concurrentTasks = new List<ValueTask>();
+            foreach (var taxonomy in taxonomies)
+            {
+                var task = AddOrUpdateItemAsync(container, taxonomy, cancellationToken);
+                concurrentTasks.Add(task);
+            }
+        }
+        else if (_cosmosDbOptions.BatchStrategy == CosmosDbBatchStrategy.ParallelRequests)
+        {
+            var container = GetContainer();
+            await Parallel.ForEachAsync(
+                taxonomies,
+                new ParallelOptions()
+                {
+                    MaxDegreeOfParallelism = _cosmosDbOptions.BatchStrategyMaxParallelRequests,
+                    CancellationToken = cancellationToken
+                },
+                async (taxonomy, ct) => await AddOrUpdateItemAsync(container, taxonomy, ct)
+                );
+        }
+        else
+        {
+            throw new NotSupportedException($"Unknown {nameof(CosmosDbBatchStrategy)} '{_cosmosDbOptions.BatchStrategy}'");
+        }
+
+        static async ValueTask AddOrUpdateItemAsync(Container container, VehicleTaxonomyDocument taxonomy, CancellationToken cancellationToken)
         {
             taxonomy.Id = CreateItemId(taxonomy.ParentPath, taxonomy.PublicId);
             var partitionKey = new PartitionKey(taxonomy.ParentPath);
-            var task = container.UpsertItemAsync(taxonomy, partitionKey, requestOptions: new()
+            await container.UpsertItemAsync(taxonomy, partitionKey, requestOptions: new()
             {
                 EnableContentResponseOnWrite = false
             }, cancellationToken: cancellationToken);
-
-            concurrentTasks.Add(task);
         }
-
-        await Task.WhenAll(concurrentTasks);
     }
 
     public async Task DeleteByIdAsync(VehicleTaxonomyEntity entityType, string entityId, string? parentMakeId, string? parentModelId, CancellationToken cancellationToken = default)
@@ -111,18 +135,22 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
     {
         var container = GetContainer();
         var parentPath = CreateParentPath(parentMakeId, parentModelId);
+        var partitionKey = new PartitionKey(parentPath);
 
         var queryText = $"""
             select *
             from t
-            where t.parentPath = @parentPath
             order by t.name
             """;
 
-        var query = new QueryDefinition(queryText)
-            .WithParameter("@parentPath", parentPath);
+        var query = new QueryDefinition(queryText);
 
-        using var feed = container.GetItemQueryIterator<VehicleTaxonomyDocument>(query);
+        using var feed = container.GetItemQueryIterator<VehicleTaxonomyDocument>(
+            query,
+            requestOptions: new()
+            {
+                PartitionKey = partitionKey
+            });
 
         var result = new List<VehicleTaxonomyDocument>();
         while (feed.HasMoreResults)
