@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using VehicleTaxonomy.Azure.Infrastructure;
 
-namespace VehicleTaxonomy.Azure.Migrator;
+namespace VehicleTaxonomy.Azure.LocalInfraInitializer;
 
 public class HostServiceProvider
 {

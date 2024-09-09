@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VehicleTaxonomy.Azure.Infra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VehicleTaxonomy.Azure.Domain.Tests", "test\VehicleTaxonomy.Azure.Domain.Tests\VehicleTaxonomy.Azure.Domain.Tests.csproj", "{A8D8B0F3-AACA-4476-A146-C025187C1641}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VehicleTaxonomy.Azure.Migrator", "src\VehicleTaxonomy.Azure.Migrator\VehicleTaxonomy.Azure.Migrator.csproj", "{996AF570-B8AF-4888-8F91-9CD6B0D87B06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleTaxonomy.Azure.LocalInfraInitializer", "src\VehicleTaxonomy.Azure.LocalInfraInitializer\VehicleTaxonomy.Azure.LocalInfraInitializer.csproj", "{DFADEAB2-324A-4A77-9C3E-9174E3F872BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,10 @@ Global
 		{A8D8B0F3-AACA-4476-A146-C025187C1641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8D8B0F3-AACA-4476-A146-C025187C1641}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8D8B0F3-AACA-4476-A146-C025187C1641}.Release|Any CPU.Build.0 = Release|Any CPU
-		{996AF570-B8AF-4888-8F91-9CD6B0D87B06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{996AF570-B8AF-4888-8F91-9CD6B0D87B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{996AF570-B8AF-4888-8F91-9CD6B0D87B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{996AF570-B8AF-4888-8F91-9CD6B0D87B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFADEAB2-324A-4A77-9C3E-9174E3F872BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFADEAB2-324A-4A77-9C3E-9174E3F872BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFADEAB2-324A-4A77-9C3E-9174E3F872BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFADEAB2-324A-4A77-9C3E-9174E3F872BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,7 +59,7 @@ Global
 		{11857E38-F910-4C63-81A2-C177373271E3} = {07882491-A167-46CF-BB41-3D9C4FB7AB53}
 		{C92FF57C-1A63-4E29-BC7F-0C1B4A125D23} = {07882491-A167-46CF-BB41-3D9C4FB7AB53}
 		{A8D8B0F3-AACA-4476-A146-C025187C1641} = {07882491-A167-46CF-BB41-3D9C4FB7AB53}
-		{996AF570-B8AF-4888-8F91-9CD6B0D87B06} = {3095FD90-2F49-4301-9F03-F94738D6D89E}
+		{DFADEAB2-324A-4A77-9C3E-9174E3F872BF} = {3095FD90-2F49-4301-9F03-F94738D6D89E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64BA2A2E-04FE-4F99-A26D-11586A1A4AB8}

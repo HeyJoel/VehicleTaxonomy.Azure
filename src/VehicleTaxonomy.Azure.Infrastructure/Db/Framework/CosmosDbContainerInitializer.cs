@@ -32,27 +32,27 @@ public class CosmosDbContainerInitializer
     }
 
     public async Task RebuildAsync(
-        ICosmosDbContainerDefinition definition
+        ICosmosDbContainerDefinition definition,
+        int requestUnits = 1000
         )
     {
         var database = await CreateDbIfNotExists();
 
         var containerProperties = definition.GetContainerProperties();
-        var result = await database.CreateContainerIfNotExistsAsync(containerProperties);
+        var result = await database.CreateContainerIfNotExistsAsync(containerProperties, requestUnits);
 
         if (result.StatusCode != System.Net.HttpStatusCode.Created)
         {
             await result.Container.DeleteContainerAsync();
-            await database.CreateContainerIfNotExistsAsync(containerProperties);
+            await database.CreateContainerIfNotExistsAsync(containerProperties, requestUnits);
         }
     }
 
     private async Task<Database> CreateDbIfNotExists()
     {
         var cosmosClient = _cosmosDbClientFactory.Get();
-        var databaseResponse = await cosmosClient.CreateDatabaseIfNotExistsAsync(_cosmosDbOptions.DatabaseName, 400);
-        var database = databaseResponse.Database;
+        var databaseResponse = await cosmosClient.CreateDatabaseIfNotExistsAsync(_cosmosDbOptions.DatabaseName);
 
-        return database;
+        return databaseResponse.Database;
     }
 }

@@ -2,13 +2,20 @@
 
 An example of a microservice that can be used to classify vehicles by make, model and variant. I have used this microservice to explore the Azure serverless stack, specifically:
 
-- Functions
+- Functions (.NET 8)
 - CosmosDb
 - Bicep
 
 This example is also available in the following stacks:
 
 - [AWS Serverless (Lambda, DynamoDb, SAM)](https://github.com/HeyJoel/VehicleTaxonomy.Aws) 
+
+## Contents
+
+- [Design Overview](#design-overview)
+- [Local Development](#local-development)
+- [Deployment](#deployment)
+- [API Docs](#api-docs)
 
 ## Design Overview
 
@@ -65,8 +72,8 @@ For our vehicle taxonomy data we'll use a single-container design, overloading t
 
 Points of note:
 
-- Because the `id` is composed from the full path we can use it to determine uniqueness via point reads and enforce uniqueness during inserts.
-- The `ParentPath` partition key can be used to efficiently return lists of makes as well as lists of models and variants filtered to their parent entity. The ordering of items is facilitated by an index on the `name` property.
+- Because the `id` is composed from the full path we can use it to determine uniqueness via [point reads](https://devblogs.microsoft.com/cosmosdb/point-reads-versus-queries/) and enforce uniqueness during inserts.
+- The `ParentPath` partition key can be used to efficiently return all makes as well as lists of models and variants filtered to their parent entity. The ordering of items is facilitated by an index on the `name` property.
 
 Here's an example variant entry:
 
@@ -87,7 +94,7 @@ Here's an example variant entry:
 
 ### API Endpoints: Functions
 
-Currently there's two approaches to developing Azure Functions in .NET, ["in-process" and "isolated"](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences). In this example I'm using the isolated worker model because it is the recommended approach, with support for the in-process model ending in Nov 2024. The [Durable Functions](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=in-process%2Cnodejs-v3%2Cv1-model&pivots=csharp) framework is used to handle the long running data import process. 
+Currently there's two approaches to developing Azure Functions in .NET, ["in-process" and "isolated"](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences). This example uses the isolated worker model because it is the recommended approach, with support for the in-process model ending in Nov 2024. The [Durable Functions](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=in-process%2Cnodejs-v3%2Cv1-model&pivots=csharp) framework is used to handle the long running data import process. 
 
 Auth is not covered by this example project so all API functions are set to allow anonymous access.
 
@@ -100,13 +107,14 @@ There are a number of IaC frameworks for getting Azure infrastructure deployed:
 - [Terraform](https://www.terraform.io/): Popular cross-platform IaC via configuration files (HCL). [OpenTofu](https://opentofu.org/) is an open source fork of Terraform.
 - [Pulumi](https://www.pulumi.com/): Open source cross platform IaC using programming languages such as TypeScript and C#.
 
-In this example we're only dealing with Azure resources so I've used Bicep.
+This example deals only with Azure resources so I've chosen to use Bicep.
 
 ## Local Development
 
 ### Prerequisits
 
 - .NET 8 SDK
+- [Visual Studio Azure workload](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?pivots=isolated#prerequisites) or equivalent tooling for your environment
 - Docker environment e.g. [Docker Desktop](https://qubitpi.github.io/docker-docs/get-docker/).
 
 Tested on Visual Studio 2022 and Docker Desktop for Windows with WSL2, but other environments should be supported.
@@ -125,11 +133,9 @@ The local ComsosDb emulator can take a while to startup, so make sure you wait u
 
 #### 2. Initialize local resources
 
-TODO: init cosmos etc first time
+IaC is used for resource creation in Azure, but this cannot be run against local emulators. For your local API environment you can run the [VehicleTaxonomy.Azure.LocalInfraInitializer](src/VehicleTaxonomy.Azure.LocalInfraInitializer) console app to create the required CosmosDb containers and Azure Storage accounts. 
 
-#### 3. Configure Api project
-
-Next configure the `VehicleTaxonomy.Azure.Api` project to connect to your local docker resources by [configuring your user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) with the following settings:
+First set the connection strings in [your local user secrets configuration](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) to match the following, then run the console app:
 
 ```json
 {
@@ -145,22 +151,26 @@ Next configure the `VehicleTaxonomy.Azure.Api` project to connect to your local 
 
 Note that the above keys are public, well known keys for the Azure emulators.
 
-#### 4. Run Api project
+#### 3. Configure the Api project
 
-Start up the `VehicleTaxonomy.Azure.Api` project. 
+Next configure the [VehicleTaxonomy.Azure.Api](src/VehicleTaxonomy.Azure.Api) project to connect to your local docker resources by [configuring your user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) with the same settings used in step 2.
+
+#### 4. Run the Api project
+
+Start up the [VehicleTaxonomy.Azure.Api](src/VehicleTaxonomy.Azure.Api) project. 
 
 - Swagger API docs are available at `http://localhost:7177/api/swagger/ui`.
 - The docker-based CosmosDb emulator GUI is available at `https://localhost:8081/_explorer/index.html`
 
 ### Running Tests
 
-Many of the domain project tests run integrated with a local CosmosDb instance provided via [test containers](https://dotnet.testcontainers.org/) which is automatically regenerated for each test run. As long as you have a local docker runtime running you will be able to run the tests. Unfortunately the long bootup time of the CosmosDb emulator significantly delays the running of integration tests, so when running locally it's more performant to test against an long-lived emulator instance. You can do this using the same local development docker compose file:
+Many of the domain project tests run integrated with a local CosmosDb instance provided via [test containers](https://dotnet.testcontainers.org/) which is automatically regenerated for each test run. As long as you have a local docker runtime running you will be able to run the tests. Unfortunately the long startup time of the CosmosDb emulator significantly delays the running of integration tests, so when running locally it's more performant to test against an long-lived emulator instance. You can do this using the same local development docker compose file:
 
 ```
 docker compose -f docker-compose.dev.yml up
 ```
 
-Then simply change the connection string in your `VehicleTaxonomy.Azure.Domain.Tests` project [user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) configuration:
+Then change the connection string in your `VehicleTaxonomy.Azure.Domain.Tests` project [user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) configuration:
 
 ```json
 {
@@ -181,7 +191,7 @@ There are currently no tests for the `VehicleTaxonomy.Azure.Api` project due to 
 
 ### Deploying Infrastructure
 
-Azure resources are deployed via [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview/) using the files located in the [Infra](/infra) folder, see the [infra readme](/infra/README.md) for deployment instructions.
+Azure resources are deployed via [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview/) using the files located in the [/infra](/infra) folder, see the [infra readme](/infra/README.md) for deployment instructions.
 
 ### Deploying the Functions App
 

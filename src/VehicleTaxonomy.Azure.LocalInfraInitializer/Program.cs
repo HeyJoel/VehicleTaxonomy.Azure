@@ -1,9 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using VehicleTaxonomy.Azure.Infrastructure.Db;
 using VehicleTaxonomy.Azure.Infrastructure.Files;
-using VehicleTaxonomy.Azure.Migrator;
+using VehicleTaxonomy.Azure.LocalInfraInitializer;
 
-// LocalInfraInitializer?
+// Console app for creating resources on local emulator instances
+// Used only to init a development environment for running the API
+// project locally. For Azure infra we use IaC.
+
 Console.WriteLine("Initializing Infra");
 
 var rootServiceProvider = HostServiceProvider.CreateServiceProvider();
