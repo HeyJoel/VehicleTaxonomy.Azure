@@ -39,8 +39,10 @@ public class CosmosDbOptions
 
     /// <summary>
     /// The maximum number of parallel requests to make when executing batchs of
-    /// requests using <see cref="CosmosDbBatchStrategy.ParallelRequests"/>.
+    /// requests using <see cref="CosmosDbBatchStrategy.ParallelRequests"/>. Defaults
+    /// to 1, running request in series to prevent overloading containers with low
+    /// RU allocations.
     /// </summary>
     [Range(1, 1000)]
-    public int BatchStrategyMaxParallelRequests { get; set; } = 4;
+    public int BatchStrategyMaxParallelRequests { get; set; } = 1;
 }
