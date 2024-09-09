@@ -98,8 +98,7 @@ public class VehicleTaxonomyRepository : IVehicleTaxonomyRepository
         }, cancellationToken: cancellationToken);
 
         // TODO: cascade deletes
-        // Note: delete by partition key is in preview
-        // https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/how-to-delete-by-partition-key?tabs=dotnet-example
+        // See https://github.com/HeyJoel/VehicleTaxonomy.Azure/issues/2
     }
 
     public async Task<VehicleTaxonomyDocument?> GetByIdAsync(
