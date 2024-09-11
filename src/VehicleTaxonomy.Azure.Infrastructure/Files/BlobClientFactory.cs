@@ -7,7 +7,7 @@ namespace VehicleTaxonomy.Azure.Infrastructure.Files;
 /// Factory that handles caching various blob clients for the duration of
 /// the factory lifetime, which should typically be registered as singleton.
 /// See <see cref="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-client-management?tabs=dotnet#manage-client-objects"/>
-/// for cleint lifetime guidance.
+/// for client lifetime guidance.
 /// </summary>
 public class BlobClientFactory
 {

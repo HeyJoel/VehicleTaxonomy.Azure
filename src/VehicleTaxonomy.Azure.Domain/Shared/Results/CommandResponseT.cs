@@ -6,7 +6,7 @@ namespace VehicleTaxonomy.Azure.Domain;
 /// <summary>
 /// Standardized response for command execution where custom data needs to be
 /// passed back to the callee e.g. the id of a newly created record. If there
-/// is a validation eror this will be detailed in the response, otherwise <see cref="IsValid"/>
+/// is a validation error this will be detailed in the response, otherwise <see cref="IsValid"/>
 /// will be <see langword="true"/> and it can be assumed command execution
 /// was successful. Any unexpected errors during handler execution will throw
 /// an exception.
