@@ -1,12 +1,11 @@
 param location string
 param project string
 param uniqueSuffix string
-
-@description('Currently only "dev" environment is supported.')
-@allowed(['dev'])
-param environmentType string
-
 param tags { *: string }
+
+@description('The application deployment environment. Currently only "dev" and "prod" environment is supported.')
+@allowed(['dev', 'prod'])
+param environmentType string
 
 var configMap = {
   dev: {
@@ -14,6 +13,12 @@ var configMap = {
       name: 'Standard_LRS'
     }
     retentionPeriodInDays: 7
+  }
+  prod: {
+    sku: {
+      name: 'Standard_GRS'
+    }
+    retentionPeriodInDays: 14
   }
 }
 var config = configMap[environmentType]

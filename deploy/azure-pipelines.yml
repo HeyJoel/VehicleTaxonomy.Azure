@@ -1,0 +1,34 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - main
+  paths:
+    include:
+      - src/*
+      - infra/*
+      - deploy/*
+      - test/*
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+
+- stage: Build
+  jobs:
+  - template: pipeline-templates/lint.yml
+  - template: pipeline-templates/build.yml
+  - template: pipeline-templates/test.yml
+
+# Deploy to the dev environment.
+- template: pipeline-templates/deploy.yml
+  parameters:
+    environmentType: dev
+    connectedServiceName: VehicleTaxonomyAzure.non-prod
+
+# Deploy to the production environment.
+- template: pipeline-templates/deploy.yml
+  parameters:
+    environmentType: prod
+    connectedServiceName: VehicleTaxonomyAzure.prod

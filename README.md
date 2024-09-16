@@ -5,6 +5,7 @@ An example of a microservice that can be used to classify vehicles by make, mode
 - Functions (.NET 8)
 - CosmosDb
 - Bicep
+- Azure Pipelines
 
 This example is also available in the following stacks:
 
@@ -151,11 +152,11 @@ First set the connection strings in [your local user secrets configuration](http
 
 Note that the above keys are public, well known keys for the Azure emulators.
 
-#### 3. Configure the Api project
+#### 3. Configure the API project
 
 Next configure the [VehicleTaxonomy.Azure.Api](src/VehicleTaxonomy.Azure.Api) project to connect to your local docker resources by [configuring your user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) with the same settings used in step 2.
 
-#### 4. Run the Api project
+#### 4. Run the API project
 
 Start up the [VehicleTaxonomy.Azure.Api](src/VehicleTaxonomy.Azure.Api) project. 
 
@@ -189,13 +190,19 @@ There are currently no tests for the `VehicleTaxonomy.Azure.Api` project due to 
 
 ## Deployment
 
-### Deploying Infrastructure
+### Manual Deployment
+
+#### Deploying Infrastructure
 
 Azure resources are deployed via [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview/) using the files located in the [/infra](/infra) folder, see the [infra readme](/infra/README.md) for deployment instructions.
 
-### Deploying the Functions App
+#### Deploying the Functions App
 
 Once the infrastructure is in place you can deploy the `VehicleTaxonomy.Azure.Api` functions project either via the [Visual Studio publish dialog](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?pivots=isolated#publish-to-azure) or via the command line with [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local). No additional application configuration is required, it is all handled by the bicep files.
+
+### CI/CD Deployment
+
+Automated deployment is supported via Azure Pipelines. See [the deployment readme](/deploy/README.md) for more information.
 
 ## API Docs
 

@@ -65,7 +65,6 @@ public sealed class DbDependentFixture : IAsyncLifetime
                     new($"{CosmosDbOptions.SectionName}:{nameof(CosmosDbOptions.UseLocalDb)}", "true"),
                 ]);
         }
-
         var configuration = BuildConfiguration(additionalConfig);
         var services = new ServiceCollection();
 
@@ -83,8 +82,10 @@ public sealed class DbDependentFixture : IAsyncLifetime
 
     private static IConfiguration BuildConfiguration(Action<IConfigurationBuilder>? additionalConfig = null)
     {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         var configBuilder = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true)
             .AddUserSecrets<DbDependentFixture>();
         additionalConfig?.Invoke(configBuilder);
 

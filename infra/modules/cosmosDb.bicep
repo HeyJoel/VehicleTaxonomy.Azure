@@ -8,8 +8,8 @@ param databaseName string = 'vehicle-taxonomy'
 @description('The name for the CosmosDb container')
 param containerName string = 'vehicle-taxonomy'
 
-@description('Currently only "dev" environment is supported.')
-@allowed(['dev'])
+@description('The application deployment environment. Currently only "dev" and "prod" environment is supported.')
+@allowed(['dev', 'prod'])
 param environmentType string
 
 param tags { *: string }
@@ -18,6 +18,10 @@ var configMap = {
   dev: {
     databaseThroughput: 1000
     useFreeTier: true
+  }
+  prod: {
+    databaseThroughput: 1000
+    useFreeTier: false
   }
 }
 var config = configMap[environmentType]

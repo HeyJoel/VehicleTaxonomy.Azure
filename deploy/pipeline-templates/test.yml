@@ -1,0 +1,12 @@
+jobs:
+- job: Test
+  dependsOn: Build
+  displayName: Run application tests
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: 'test/**/*.csproj'
+      arguments: '--configuration release'
+    env:
+      ASPNETCORE_ENVIRONMENT: ci

@@ -31,6 +31,15 @@ public class CosmosDbOptions
     public bool UseLocalDb { get; set; }
 
     /// <summary>
+    /// Use retry policies when handling transient faults. Defaults to
+    /// <see langword="true"/> but is useful for disable when running
+    /// local tests so tests don't hang when there is a connection error.
+    /// For CI I've found that the CosmosDb emulator can still have intermittent
+    /// connection issues so I don't disable it there.
+    /// </summary>
+    public bool UseRetries { get; set; } = true;
+
+    /// <summary>
     /// The request execution strategy to use when executing batch requests
     /// against a CosmosDb container. Defaults to <see cref="CosmosDbBatchStrategy.ParallelRequests"/>
     /// for best compatibility with low RU configurations.

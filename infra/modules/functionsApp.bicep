@@ -1,22 +1,28 @@
 param location string
 param project string
 param uniqueSuffix string
-
-@description('Currently only "dev" environment is supported.')
-@allowed(['dev'])
-param environmentType string
-
 param tags { *: string }
 param cosmosDbAccountName string
 param cosmosDbDatabaseName string
 param importFileStorageAccountName string
 param logAnalyticsWorkspaceId string
 
+@description('The application deployment environment. Currently only "dev" and "prod" environment is supported.')
+@allowed(['dev', 'prod'])
+param environmentType string
+
 var configMap = {
   dev: {
     storageAccount: { 
       sku: {
         name: 'Standard_LRS'
+      }
+    }
+  }
+  prod: {
+    storageAccount: { 
+      sku: {
+        name: 'Standard_GRS'
       }
     }
   }
@@ -145,5 +151,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+output functionHostName string = functionApp.properties.defaultHostName
 output functionBaseUrl string = 'https://${functionApp.properties.defaultHostName}/api' 
 output functionAppName string = functionApp.name

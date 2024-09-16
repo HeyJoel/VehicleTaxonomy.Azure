@@ -1,0 +1,130 @@
+parameters:
+- name: environmentType
+  type: string
+- name: deploymentDefaultLocation
+  type: string
+  default: eastus2
+- name: connectedServiceName
+  type: string
+  
+stages:
+
+# Basic validation of bicep IaC code by running a build
+- ${{ if eq(parameters.environmentType, 'dev') }}:
+  - stage: BicepValidate_${{parameters.environmentType}}
+    displayName: BicepValidate (${{parameters.environmentType}})
+    jobs:
+    - job: ValidateBicepCode
+      displayName: Validate Bicep code
+      steps:
+        - task: AzureResourceManagerTemplateDeployment@3
+          name: RunPreflightValidation
+          displayName: Run preflight validation
+          inputs:
+            deploymentScope: 'Subscription'
+            connectedServiceName: ${{parameters.connectedServiceName}}
+            location: ${{parameters.deploymentDefaultLocation}}
+            deploymentMode: Validation
+            azureSubscription: ${{parameters.connectedServiceName}}
+            csmFile: infra/main.bicep
+            csmParametersFile: infra/main.${{parameters.environmentType}}.bicepparam
+
+# Preview (what-if) bicep changes for production only
+- ${{ if eq(parameters.environmentType, 'prod') }}:
+  - stage: BicepPreview_${{parameters.environmentType}}
+    displayName: Bicep Preview (${{parameters.environmentType}})
+    jobs:
+    - job: PreviewAzureChanges
+      displayName: Preview Azure changes
+      steps:
+        - task: AzureCLI@2
+          name: RunWhatIf
+          displayName: Run what-if
+          inputs:
+            azureSubscription: ${{parameters.connectedServiceName}}
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              az deployment sub what-if \
+                --template-file infra/main.bicep \
+                --location ${{parameters.deploymentDefaultLocation}} \
+                --parameters infra/main.${{parameters.environmentType}}.bicepparam
+
+# Main deploy stage
+- stage: Deploy_${{parameters.environmentType}}
+  displayName: Deploy (${{parameters.environmentType}})
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy bicep IaC and functions app
+    pool:
+      vmImage: windows-latest
+    environment: ${{parameters.environmentType}}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            # Deploy Infra via Bicep
+            - task: AzureResourceManagerTemplateDeployment@3
+              name: DeployBicepFile
+              displayName: Deploy Bicep file
+              inputs:
+                deploymentScope: 'Subscription'
+                connectedServiceName: ${{parameters.connectedServiceName}}
+                deploymentName: $(Build.BuildNumber)
+                location: ${{parameters.deploymentDefaultLocation}}
+                azureSubscription: ${{parameters.connectedServiceName}}
+                csmFile: infra/main.bicep
+                csmParametersFile: infra/main.${{parameters.environmentType}}.bicepparam
+                deploymentOutputs: deploymentOutputs
+
+            - bash: |
+                echo "##vso[task.setvariable variable=functionAppName]$(echo $DEPLOYMENT_OUTPUTS | jq -r '.functionAppName.value')"
+                echo "##vso[task.setvariable variable=functionHostName;isOutput=true]$(echo $DEPLOYMENT_OUTPUTS | jq -r '.functionHostName.value')"
+                echo "##vso[task.setvariable variable=resourceGroupName]$(echo $DEPLOYMENT_OUTPUTS | jq -r '.resourceGroupName.value')"
+              name: SaveBicepOutputs
+              displayName: Save bicep deployment outputs into variables
+              env:
+                DEPLOYMENT_OUTPUTS: $(deploymentOutputs)
+
+            # Deploy the main Azure Functions app
+            - task: AzureFunctionApp@2
+              name: DeployFunctionApp
+              displayName: Deploy function app
+              inputs:
+                appType: functionApp
+                azureSubscription: ${{parameters.connectedServiceName}}
+                appName: $(functionAppName)
+                package: $(Pipeline.Workspace)/drop/*.zip
+                deploymentMethod: 'auto'
+
+# Simple smoke tests to ensure the app has started up
+- stage: SmokeTest_${{parameters.environmentType}}
+  displayName: Smoke Test (${{parameters.environmentType}})
+  jobs:
+  - job: SmokeTest
+    displayName: Smoke test
+    variables:
+      functionHostName: $[ stageDependencies.Deploy_${{parameters.environmentType}}.Deploy.outputs['Deploy.SaveBicepOutputs.functionHostName'] ]
+    steps:
+      - task: PowerShell@2
+        name: RunSmokeTests
+        displayName: Run smoke tests
+        inputs:
+          targetType: inline
+          script: |
+            $container = New-PesterContainer `
+              -Path 'deploy/smoke-tests.ps1' `
+              -Data @{ HostName = '$(functionHostName)' }
+            Invoke-Pester `
+              -Container $container `
+              -CI
+
+      - task: PublishTestResults@2
+        name: PublishTestResults
+        displayName: Publish test results
+        condition: always()
+        inputs:
+          testResultsFormat: NUnit
+          testResultsFiles: 'testResults.xml'

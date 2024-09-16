@@ -1,0 +1,31 @@
+jobs:
+- job: Build
+  dependsOn: Lint
+  displayName: Build application
+  pool:
+    vmImage: windows-latest
+
+  steps:
+
+  - task: DotNetCoreCLI@2
+    displayName: Build functions app
+    inputs:
+      command: 'publish'
+      arguments: '--configuration Release --output publish_output'
+      projects: 'src/VehicleTaxonomy.Azure.Api/*.csproj'
+      publishWebProjects: false
+      modifyOutputPath: false
+      zipAfterPublish: false
+
+  - task: ArchiveFiles@2
+    displayName: "Create zip file"
+    inputs:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)/publish_output"
+      includeRootFolder: false
+      archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+  
+  - task: PublishBuildArtifacts@1
+    displayName: Publish zip file as artifact
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+      artifactName: 'drop'

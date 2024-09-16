@@ -55,8 +55,11 @@ public sealed class CosmosDbClientFactory : IDisposable
             clientOptions.ConnectionMode = ConnectionMode.Gateway;
             clientOptions.LimitToEndpoint = true;
 
-            // Don't hang around if we get a connection issue
-            clientOptions.MaxRetryAttemptsOnRateLimitedRequests = 0;
+            if (!_cosmosDbOptions.UseRetries)
+            {
+                // Don't hang around if we get a connection issue
+                clientOptions.MaxRetryAttemptsOnRateLimitedRequests = 0;
+            }
         }
 
         return new CosmosClient(_cosmosDbOptions.ConnectionString, clientOptions);

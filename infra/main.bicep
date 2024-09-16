@@ -3,8 +3,8 @@ targetScope = 'subscription'
 @description('The location to deploy the project e.g. "eastus2"')
 param location string
 
-@description('The application deployment environment. Currently only "dev" environment is supported.')
-@allowed(['dev'])
+@description('The application deployment environment. Currently only "dev" and "prod" environment is supported.')
+@allowed(['dev', 'prod'])
 param environmentType string
 
 var project = 'veh-tax-bic'
@@ -33,5 +33,6 @@ module resources 'resources.bicep' = {
 }
 
 output resourceGroupName string = resourceGroup.name
+output functionHostName string = resources.outputs.functionHostName
 output functionAppName string = resources.outputs.functionAppName
 output functionBaseUrl string = resources.outputs.functionBaseUrl

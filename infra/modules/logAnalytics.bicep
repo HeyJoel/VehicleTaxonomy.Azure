@@ -1,11 +1,10 @@
 param location string
 param project string
+param tags { *: string }
 
 @description('Currently only "dev" environment is supported.')
-@allowed(['dev'])
+@allowed(['dev', 'prod'])
 param environmentType string
-
-param tags { *: string }
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: toLower('laws-${project}-${environmentType}')
