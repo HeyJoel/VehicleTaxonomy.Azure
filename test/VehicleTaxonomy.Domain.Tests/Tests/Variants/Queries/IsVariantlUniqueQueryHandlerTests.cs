@@ -7,7 +7,6 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Queries;
 public class IsVariantUniqueQueryHandlerTests
 {
     private const string UniquePrefix = "IsVariantUniqueQH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public IsVariantUniqueQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -36,11 +35,8 @@ public class IsVariantUniqueQueryHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            result.Result.Should().BeTrue();
-        }
+        Assert.True(result.IsValid);
+        Assert.True(result.Result);
     }
 
     [Fact]
@@ -58,15 +54,13 @@ public class IsVariantUniqueQueryHandlerTests
             Name = uniqueData
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsVariantUniqueQuery.ModelId));
-            error.Message.Should().MatchEquivalentOf("*model*exist*");
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsVariantUniqueQuery.ModelId), error.Property);
+        Assert.Contains("Model does not exist", error.Message);
+        Assert.False(result.Result);
     }
 
     [Theory]
@@ -88,14 +82,12 @@ public class IsVariantUniqueQueryHandlerTests
             Name = "na"
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsVariantUniqueQuery.ModelId));
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsVariantUniqueQuery.ModelId), error.Property);
+        Assert.False(result.Result);
     }
 
     [Theory]
@@ -116,14 +108,12 @@ public class IsVariantUniqueQueryHandlerTests
             Name = name!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsVariantUniqueQuery.Name));
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsVariantUniqueQuery.Name), error.Property);
+        Assert.False(result.Result);
     }
 
     [Fact]
@@ -146,10 +136,7 @@ public class IsVariantUniqueQueryHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            result.Result.Should().BeFalse();
-        }
+        Assert.True(result.IsValid);
+        Assert.False(result.Result);
     }
 }

@@ -8,7 +8,6 @@ namespace VehicleTaxonomy.Domain.Tests.Models.Commands;
 public class AddModelCommandHandlerTests
 {
     private const string UniquePrefix = "AddModelCH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public AddModelCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -36,27 +35,19 @@ public class AddModelCommandHandlerTests
 
         var dbRecord = await modelTestHelper.GetRawDocumentAsync(makeId, id);
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            if (!result.IsValid)
-            {
-                return;
-            }
+        Assert.True(result.IsValid);
+        Assert.Equal(id, result.Result.Id);
+        Assert.NotNull(dbRecord);
 
-            result.Result.Id.Should().Be(id);
-            dbRecord.Should().NotBeNull();
-
-            InlineSnapshot
-                .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
-                .Validate(dbRecord, """
-                    EntityType: Model
-                    ParentPath: /addmodelch-whenvalid-canaddmk
-                    PublicId: addmodelch-whenvalid-canadd
-                    Name: AddModelCH_WhenValid_CanAdd
-                    CreateDate: 2024-07-16T08:23:56
-                    """);
-        }
+        InlineSnapshot
+            .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
+            .Validate(dbRecord, """
+                EntityType: Model
+                ParentPath: /addmodelch-whenvalid-canaddmk
+                PublicId: addmodelch-whenvalid-canadd
+                Name: AddModelCH_WhenValid_CanAdd
+                CreateDate: 2024-07-16T08:23:56
+                """);
     }
 
     [Fact]
@@ -74,15 +65,13 @@ public class AddModelCommandHandlerTests
             Name = id
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddModelCommand.MakeId));
-            error.Message.Should().MatchEquivalentOf("*make*exist*");
-            result.Result.Should().BeNull();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(AddModelCommand.MakeId), error.Property);
+        Assert.Contains("Make does not exist", error.Message);
+        Assert.Null(result.Result);
     }
 
     [Theory]
@@ -103,14 +92,12 @@ public class AddModelCommandHandlerTests
             Name = "na"
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddModelCommand.MakeId));
-            result.Result.Should().BeNull();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(AddModelCommand.MakeId), error.Property);
+        Assert.Null(result.Result);
     }
 
     [Theory]
@@ -130,14 +117,12 @@ public class AddModelCommandHandlerTests
             Name = name!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddModelCommand.Name));
-            result.Result.Should().BeNull();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(AddModelCommand.Name), error.Property);
+        Assert.Null(result.Result);
     }
 
     [Fact]
@@ -164,15 +149,12 @@ public class AddModelCommandHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result1.IsValid.Should().BeTrue();
-            result2.IsValid.Should().BeFalse();
-            result2.ValidationErrors.Should().HaveCount(1);
+        Assert.True(result1.IsValid);
+        Assert.False(result2.IsValid);
+        Assert.Single(result2.ValidationErrors);
 
-            var error = result2.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddModelCommand.Name));
-            error.Message.Should().Match("*already exists*");
-        }
+        var error = result2.ValidationErrors.First();
+        Assert.Equal(nameof(AddModelCommand.Name), error.Property);
+        Assert.Contains("already exists", error.Message);
     }
 }

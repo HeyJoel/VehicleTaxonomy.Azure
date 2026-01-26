@@ -7,7 +7,6 @@ namespace VehicleTaxonomy.Domain.Tests.Models.Queries;
 public class IsModelUniqueQueryHandlerTests
 {
     private const string UniquePrefix = "IsModelUniqueQH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public IsModelUniqueQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -35,11 +34,8 @@ public class IsModelUniqueQueryHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            result.Result.Should().BeTrue();
-        }
+        Assert.True(result.IsValid);
+        Assert.True(result.Result);
     }
 
     [Fact]
@@ -56,15 +52,13 @@ public class IsModelUniqueQueryHandlerTests
             Name = uniqueData
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsModelUniqueQuery.MakeId));
-            error.Message.Should().MatchEquivalentOf("*make*exist*");
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsModelUniqueQuery.MakeId), error.Property);
+        Assert.Contains("Make does not exist", error.Message);
+        Assert.False(result.Result);
     }
 
     [Theory]
@@ -85,14 +79,12 @@ public class IsModelUniqueQueryHandlerTests
             Name = "na"
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsModelUniqueQuery.MakeId));
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsModelUniqueQuery.MakeId), error.Property);
+        Assert.False(result.Result);
     }
 
     [Theory]
@@ -112,14 +104,12 @@ public class IsModelUniqueQueryHandlerTests
             Name = name!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsModelUniqueQuery.Name));
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsModelUniqueQuery.Name), error.Property);
+        Assert.False(result.Result);
     }
 
     [Fact]
@@ -141,10 +131,7 @@ public class IsModelUniqueQueryHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            result.Result.Should().BeFalse();
-        }
+        Assert.True(result.IsValid);
+        Assert.False(result.Result);
     }
 }

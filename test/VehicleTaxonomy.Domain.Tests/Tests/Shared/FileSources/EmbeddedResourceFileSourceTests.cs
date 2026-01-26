@@ -35,9 +35,6 @@ public class EmbeddedResourceFileSourceTests
         var assembly = this.GetType().Assembly;
         var instance = new EmbeddedResourceFileSource(assembly, "VehicleTaxonomy.Domain.Tests.Tests.Shared.FileSources", "NotFound.txt");
 
-        await instance
-            .Awaiting(f => f.OpenReadStreamAsync())
-            .Should()
-            .ThrowAsync<FileNotFoundException>();
+        await Assert.ThrowsAsync<FileNotFoundException>(() => instance.OpenReadStreamAsync());
     }
 }

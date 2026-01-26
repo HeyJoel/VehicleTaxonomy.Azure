@@ -18,7 +18,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrNull<TestEnum>("Value5");
 
-        result.Should().Be(TestEnum.Value5);
+        Assert.Equal(TestEnum.Value5, result);
     }
 
     [Theory]
@@ -29,7 +29,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrNull<TestEnum>(value);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrNull<TestEnum>(5);
 
-        result.Should().Be(TestEnum.Value5);
+        Assert.Equal(TestEnum.Value5, result);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrNull<TestEnum>(13);
 
-        result.Should().BeNull();
+        Assert.Null(result);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrDefault<TestEnum>("Inconceivable");
 
-        result.Should().Be(TestEnum.Default);
+        Assert.Equal(TestEnum.Default, result);
     }
 
     [Theory]
@@ -64,7 +64,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrDefault<TestEnum>(value, defaultResult);
 
-        result.Should().Be(defaultResult);
+        Assert.Equal(defaultResult, result);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class EnumParserTests
     {
         var result = EnumParser.ParseOrThrow<TestEnum>(5);
 
-        result.Should().Be(TestEnum.Value5);
+        Assert.Equal(TestEnum.Value5, result);
     }
 
     [Fact]
@@ -80,9 +80,7 @@ public class EnumParserTests
     {
         Action sut = () => EnumParser.ParseOrThrow<TestEnum>(4);
 
-        sut
-            .Should()
-            .Throw<ArgumentException>()
-            .WithMessage("4 * valid TestEnum *");
+        var ex = Assert.Throws<ArgumentException>(() => EnumParser.ParseOrThrow<TestEnum>(4));
+        Assert.Equal("4 is not a valid TestEnum value.", ex.Message);
     }
 }

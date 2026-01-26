@@ -9,7 +9,6 @@ namespace VehicleTaxonomy.Domain.Tests.Models.Queries;
 public class ListModelsQueryHandlerTests
 {
     private const string UniquePrefix = "ListModelsQH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public ListModelsQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -39,22 +38,20 @@ public class ListModelsQueryHandlerTests
             MakeId = make1Id
         });
 
+        Assert.True(response.IsValid);
+        Assert.NotNull(response.Result);
+        Assert.NotEmpty(response.Result);
+
         var filteredResults = EnumerableHelper
             .Enumerate(response.Result)
             .Where(r => r.Name.StartsWith(name1))
             .ToArray();
 
-        using (new AssertionScope())
-        {
-            response.IsValid.Should().BeTrue();
-            response.Result.Should().NotBeNullOrEmpty();
-
-            InlineSnapshot.Validate(filteredResults, """
-                - ModelId: listmodelsqh-canreturnunfiltered1
-                  Name: ListModelsQH_CanReturnUnfiltered1
-                - ModelId: listmodelsqh-canreturnunfiltered12
-                  Name: ListModelsQH_CanReturnUnfiltered12
-                """);
-        }
+        InlineSnapshot.Validate(filteredResults, """
+            - ModelId: listmodelsqh-canreturnunfiltered1
+              Name: ListModelsQH_CanReturnUnfiltered1
+            - ModelId: listmodelsqh-canreturnunfiltered12
+              Name: ListModelsQH_CanReturnUnfiltered12
+            """);
     }
 }

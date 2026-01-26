@@ -27,11 +27,8 @@ public class IsMakeUniqueQueryHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            result.Result.Should().BeTrue();
-        }
+        Assert.True(result.IsValid);
+        Assert.True(result.Result);
     }
 
     [Theory]
@@ -50,14 +47,12 @@ public class IsMakeUniqueQueryHandlerTests
             Name = name!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(IsMakeUniqueQuery.Name));
-            result.Result.Should().BeFalse();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(IsMakeUniqueQuery.Name), error.Property);
+        Assert.False(result.Result);
     }
 
     [Fact]
@@ -76,10 +71,7 @@ public class IsMakeUniqueQueryHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            result.Result.Should().BeFalse();
-        }
+        Assert.True(result.IsValid);
+        Assert.False(result.Result);
     }
 }

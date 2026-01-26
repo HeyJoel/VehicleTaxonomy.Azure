@@ -9,12 +9,9 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Queries;
 public class ListVariantsQueryHandlerTests
 {
     private const string UniquePrefix = "ListVariantsQH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
-    public ListVariantsQueryHandlerTests(
-        DbDependentFixture dbDependentFixture
-        )
+    public ListVariantsQueryHandlerTests(DbDependentFixture dbDependentFixture)
     {
         _dbDependentFixture = dbDependentFixture;
     }
@@ -46,24 +43,22 @@ public class ListVariantsQueryHandlerTests
             ModelId = model1Id
         });
 
+        Assert.True(response.IsValid);
+        Assert.NotNull(response.Result);
+        Assert.NotEmpty(response.Result);
+
         var filteredResults = EnumerableHelper
             .Enumerate(response.Result)
             .Where(r => r.Name.StartsWith(name1))
             .ToArray();
 
-        using (new AssertionScope())
-        {
-            response.IsValid.Should().BeTrue();
-            response.Result.Should().NotBeNullOrEmpty();
-
-            InlineSnapshot.Validate(filteredResults, """
-                - VariantId: listvariantsqh-canlistbymake1
-                  Name: ListVariantsQH_CanListByMake1
-                - VariantId: listvariantsqh-canlistbymake12
-                  Name: ListVariantsQH_CanListByMake12
-                  FuelCategory: ElectricHybridDiesel
-                  EngineSizeInCC: 1234
-                """);
-        }
+        InlineSnapshot.Validate(filteredResults, """
+            - VariantId: listvariantsqh-canlistbymake1
+              Name: ListVariantsQH_CanListByMake1
+            - VariantId: listvariantsqh-canlistbymake12
+              Name: ListVariantsQH_CanListByMake12
+              FuelCategory: ElectricHybridDiesel
+              EngineSizeInCC: 1234
+            """);
     }
 }

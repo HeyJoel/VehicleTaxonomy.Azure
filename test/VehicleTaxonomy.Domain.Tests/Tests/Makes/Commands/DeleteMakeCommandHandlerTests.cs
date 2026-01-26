@@ -7,12 +7,9 @@ namespace VehicleTaxonomy.Domain.Tests.Makes.Commands;
 public class DeleteMakeCommandHandlerTests
 {
     private const string UniquePrefix = "DelMakeCH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
-    public DeleteMakeCommandHandlerTests(
-        DbDependentFixture dbDependentFixture
-        )
+    public DeleteMakeCommandHandlerTests(DbDependentFixture dbDependentFixture)
     {
         _dbDependentFixture = dbDependentFixture;
     }
@@ -34,11 +31,8 @@ public class DeleteMakeCommandHandlerTests
 
         var dbRecord = await makeTestHelper.GetRawDocumentAsync(id);
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            dbRecord.Should().BeNull();
-        }
+        Assert.True(result.IsValid);
+        Assert.Null(dbRecord);
     }
 
     [Theory]
@@ -58,13 +52,10 @@ public class DeleteMakeCommandHandlerTests
             MakeId = name!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteMakeCommand.MakeId));
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteMakeCommand.MakeId), error.Property);
     }
 
     [Fact]
@@ -80,14 +71,11 @@ public class DeleteMakeCommandHandlerTests
             MakeId = EntityIdFormatter.Format(name)
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
 
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteMakeCommand.MakeId));
-            error.Message.Should().Match("*not*found*");
-        }
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteMakeCommand.MakeId), error.Property);
+        Assert.Contains("not be found", error.Message);
     }
 }

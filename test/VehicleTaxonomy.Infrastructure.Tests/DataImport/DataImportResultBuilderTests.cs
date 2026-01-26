@@ -137,6 +137,6 @@ public class DataImportResultBuilderTests
 
         var result = builder.Build();
 
-        result.Status.Should().Be(DataImportJobStatus.FatalError);
+        Assert.Equal(DataImportJobStatus.FatalError, result.Status);
     }
 }

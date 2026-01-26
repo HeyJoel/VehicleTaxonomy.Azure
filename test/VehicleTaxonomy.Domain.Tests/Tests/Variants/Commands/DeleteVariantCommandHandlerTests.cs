@@ -7,7 +7,6 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Commands;
 public class DeleteVariantCommandHandlerTests
 {
     private const string UNIQUE_PREFIX = "DelVariantCH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public DeleteVariantCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -36,11 +35,8 @@ public class DeleteVariantCommandHandlerTests
 
         var dbRecord = await variantTestHelper.GetRawDocumentAsync(makeId, modelId, id);
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            dbRecord.Should().BeNull();
-        }
+        Assert.True(result.IsValid);
+        Assert.Null(dbRecord);
     }
 
     [Theory]
@@ -62,13 +58,11 @@ public class DeleteVariantCommandHandlerTests
             VariantId = "na"
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteVariantCommand.ModelId));
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteVariantCommand.ModelId), error.Property);
     }
 
     [Theory]
@@ -90,13 +84,11 @@ public class DeleteVariantCommandHandlerTests
             VariantId = id!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteVariantCommand.VariantId));
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteVariantCommand.VariantId), error.Property);
     }
 
     [Fact]
@@ -114,14 +106,11 @@ public class DeleteVariantCommandHandlerTests
             VariantId = EntityIdFormatter.Format(uniqueData)
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
 
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteVariantCommand.VariantId));
-            error.Message.Should().Match("*not*found*");
-        }
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteVariantCommand.VariantId), error.Property);
+        Assert.Contains("not be found", error.Message);
     }
 }

@@ -7,7 +7,6 @@ namespace VehicleTaxonomy.Domain.Tests.Models.Commands;
 public class DeleteModelCommandHandlerTests
 {
     private const string UniquePrefix = "DelModelCH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public DeleteModelCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -35,11 +34,8 @@ public class DeleteModelCommandHandlerTests
 
         var dbRecord = await modelTestHelper.GetRawDocumentAsync(makeId, id);
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            dbRecord.Should().BeNull();
-        }
+        Assert.True(result.IsValid);
+        Assert.Null(dbRecord);
     }
 
     [Theory]
@@ -60,13 +56,11 @@ public class DeleteModelCommandHandlerTests
             ModelId = "na"
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteModelCommand.MakeId));
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteModelCommand.MakeId), error.Property);
     }
 
     [Theory]
@@ -87,13 +81,11 @@ public class DeleteModelCommandHandlerTests
             ModelId = id!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteModelCommand.ModelId));
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteModelCommand.ModelId), error.Property);
     }
 
     [Fact]
@@ -110,14 +102,11 @@ public class DeleteModelCommandHandlerTests
             ModelId = EntityIdFormatter.Format(uniqueData)
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
 
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(DeleteModelCommand.ModelId));
-            error.Message.Should().Match("*not*found*");
-        }
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(DeleteModelCommand.ModelId), error.Property);
+        Assert.Contains("not be found", error.Message);
     }
 }

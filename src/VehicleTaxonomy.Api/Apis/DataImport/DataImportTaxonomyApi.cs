@@ -85,13 +85,16 @@ public class DataImportTaxonomyApi
         HttpRequest req,
         string functionName,
         DataImportMode dataImportMode,
-        CancellationToken cancellationToken
-        )
+        CancellationToken cancellationToken)
     {
         var formData = await req.ReadFormAsync(cancellationToken);
         var file = formData.Files[nameof(ImportTaxonomyFromCsvCommand.File)];
 
-        logger.LogInformation("Triggered {Function} with file '{FileName}', size {FileSizeInBytes}b", functionName, file?.FileName, file?.Length);
+        logger.LogInformation(
+            "Triggered {Function} with file '{FileName}', size {FileSizeInBytes}b",
+            functionName,
+            file?.FileName,
+            file?.Length);
 
         var command = new ImportTaxonomyFromCsvCommand()
         {

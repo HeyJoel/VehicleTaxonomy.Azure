@@ -41,8 +41,7 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
         var dbModel = await modelTestHelper.GetRawDocumentAsync(makeId, modelId);
         var dbVariant = await variantTestHelper.GetRawDocumentAsync(makeId, modelId, variantId);
 
-        response.IsValid.Should().BeTrue();
-
+        Assert.True(response.IsValid);
         InlineSnapshot.Validate(response.Result, """
             NumSuccess: 1
             Status: Finished
@@ -106,7 +105,7 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
             ImportMode = DataImportMode.Run
         });
 
-        response.IsValid.Should().BeTrue();
+        Assert.True(response.IsValid);
         InlineSnapshot.Validate(response.Result, """
             NumSuccess: 51
             NumSkipped: 5
@@ -145,17 +144,15 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
 
         var dbMake = await makeTestHelper.GetRawDocumentAsync(makeId);
 
-        using (new AssertionScope())
-        {
-            dbMake.Should().BeNull();
-            response.IsValid.Should().BeTrue();
-            InlineSnapshot.Validate(response.Result, """
-                NumSuccess: 1
-                Status: Finished
-                SkippedReasons: {}
-                ValidationErrors: {}
-                """);
-        }
+        Assert.Null(dbMake);
+        Assert.True(response.IsValid);
+
+        InlineSnapshot.Validate(response.Result, """
+            NumSuccess: 1
+            Status: Finished
+            SkippedReasons: {}
+            ValidationErrors: {}
+            """);
     }
 
     [Fact]
@@ -170,14 +167,12 @@ public class ImportTaxonomyFromCsvCommandHandlerTests
             ImportMode = DataImportMode.Run
         });
 
-        using (new AssertionScope())
-        {
-            response.IsValid.Should().BeFalse();
-            response.ValidationErrors.Should().HaveCount(1);
-            var error = response.ValidationErrors.First();
-            error.Property.Should().Be(nameof(ImportTaxonomyFromCsvCommand.File));
-            response.Result.Should().BeNull();
-        }
+        Assert.False(response.IsValid);
+        Assert.Single(response.ValidationErrors);
+
+        var error = response.ValidationErrors.First();
+        Assert.Equal(nameof(ImportTaxonomyFromCsvCommand.File), error.Property);
+        Assert.Null(response.Result);
     }
 
     private EmbeddedResourceFileSource GetTestFileSourceAsync(string uniqueName)

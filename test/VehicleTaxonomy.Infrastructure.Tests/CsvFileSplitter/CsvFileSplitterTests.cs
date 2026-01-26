@@ -1,6 +1,5 @@
 namespace VehicleTaxonomy.Infrastructure.Tests.CsvFileSplitter;
 
-using FluentAssertions.Execution;
 using VehicleTaxonomy.Infrastructure;
 
 public class CsvFileSplitterTests
@@ -18,7 +17,7 @@ public class CsvFileSplitterTests
             return Task.CompletedTask;
         });
 
-        results.Should().HaveCount(0);
+        Assert.Empty(results);
     }
 
     [Fact]
@@ -35,42 +34,39 @@ public class CsvFileSplitterTests
             return Task.CompletedTask;
         });
 
-        using (new AssertionScope())
-        {
-            results.Should().HaveCount(3);
+        Assert.Equal(3, results.Count);
 
-            var result1 = results[0];
-            result1.Item1.BatchNumber.Should().Be(1);
-            result1.Item1.NumRows.Should().Be(3);
-            InlineSnapshot.Validate(result1.Item2, """
-                col1,col2
-                1,One
-                2,Two
-                3,Three
+        var result1 = results[0];
+        Assert.Equal(1, result1.Item1.BatchNumber);
+        Assert.Equal(3, result1.Item1.NumRows);
+        InlineSnapshot.Validate(result1.Item2, """
+            col1,col2
+            1,One
+            2,Two
+            3,Three
 
-                """);
+            """);
 
-            var result2 = results[1];
-            result2.Item1.BatchNumber.Should().Be(2);
-            result2.Item1.NumRows.Should().Be(3);
-            InlineSnapshot.Validate(result2.Item2, """
-                col1,col2
-                4,Four
-                5,Five
-                6,Six
+        var result2 = results[1];
+        Assert.Equal(2, result2.Item1.BatchNumber);
+        Assert.Equal(3, result2.Item1.NumRows);
+        InlineSnapshot.Validate(result2.Item2, """
+            col1,col2
+            4,Four
+            5,Five
+            6,Six
 
-                """);
+            """);
 
-            var result3 = results[2];
-            result3.Item1.BatchNumber.Should().Be(3);
-            result3.Item1.NumRows.Should().Be(2);
-            InlineSnapshot.Validate(result3.Item2, """
-                col1,col2
-                7,Seven
-                8,Eight
+        var result3 = results[2];
+        Assert.Equal(3, result3.Item1.BatchNumber);
+        Assert.Equal(2, result3.Item1.NumRows);
+        InlineSnapshot.Validate(result3.Item2, """
+            col1,col2
+            7,Seven
+            8,Eight
 
-                """);
-        }
+            """);
     }
 
     private Stream GetTestFileSourceAsync(string testName)

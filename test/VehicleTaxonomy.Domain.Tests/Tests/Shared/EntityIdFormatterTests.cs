@@ -11,7 +11,7 @@ public class EntityIdFormatterTests
     {
         var result = EntityIdFormatter.Format(s!);
 
-        result.Should().BeEmpty();
+        Assert.Empty(result);
     }
 
     [Theory]
@@ -22,7 +22,7 @@ public class EntityIdFormatterTests
     {
         var result = EntityIdFormatter.Format(s);
 
-        result.Should().Be(s);
+        Assert.Equal(s, result);
     }
 
     [Theory]
@@ -33,7 +33,7 @@ public class EntityIdFormatterTests
     {
         var result = EntityIdFormatter.Format(input);
 
-        result.Should().Be(expected);
+        Assert.Equal(expected, result);
     }
 
     [Theory]
@@ -52,7 +52,7 @@ public class EntityIdFormatterTests
     {
         var result = EntityIdFormatter.Format(input);
 
-        result.Should().Be(expected);
+        Assert.Equal(expected, result);
     }
 
     [Theory]
@@ -60,12 +60,12 @@ public class EntityIdFormatterTests
     [InlineData("with a space at end ", "with-a-space-at-end")]
     [InlineData("   with space at start", "with-space-at-start")]
     [InlineData("with space at end   ", "with-space-at-end")]
-    [InlineData("with puntucation at end+=.–:", "with-puntucation-at-end")]
-    [InlineData("+=.–:with puntucation at start", "with-puntucation-at-start")]
+    [InlineData("with punctuation at end+=.–:", "with-punctuation-at-end")]
+    [InlineData("+=.–:with punctuation at start", "with-punctuation-at-start")]
     public void Format_TrimsExcessNonCharacters(string input, string expected)
     {
         var result = EntityIdFormatter.Format(input);
 
-        result.Should().Be(expected);
+        Assert.Equal(expected, result);
     }
 }

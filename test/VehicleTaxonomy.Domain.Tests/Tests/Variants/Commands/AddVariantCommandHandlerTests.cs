@@ -37,28 +37,20 @@ public class AddVariantCommandHandlerTests
 
         var dbRecord = await variantTestHelper.GetRawDocumentAsync(makeId, modelId, id);
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            if (!result.IsValid)
-            {
-                return;
-            }
+        Assert.True(result.IsValid);
+        Assert.Equal(id, result.Result.Id);
+        Assert.NotNull(dbRecord);
 
-            result.Result.Id.Should().Be(id);
-            dbRecord.Should().NotBeNull();
-
-            InlineSnapshot
-                .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
-                .Validate(dbRecord, """
-                    EntityType: Variant
-                    ParentPath: /addvariantch-whenvalid-canaddmk/addvariantch-whenvalid-canaddmd
-                    PublicId: addvariantch-whenvalid-canadd
-                    Name: AddVariantCH_WhenValid_CanAdd
-                    CreateDate: 2024-07-16T08:23:56
-                    VariantData: {}
-                    """);
-        }
+        InlineSnapshot
+            .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
+            .Validate(dbRecord, """
+                EntityType: Variant
+                ParentPath: /addvariantch-whenvalid-canaddmk/addvariantch-whenvalid-canaddmd
+                PublicId: addvariantch-whenvalid-canadd
+                Name: AddVariantCH_WhenValid_CanAdd
+                CreateDate: 2024-07-16T08:23:56
+                VariantData: {}
+                """);
     }
 
     [Fact]
@@ -84,29 +76,21 @@ public class AddVariantCommandHandlerTests
 
         var dbRecord = await variantTestHelper.GetRawDocumentAsync(makeId, modelId, id);
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeTrue();
-            if (!result.IsValid)
-            {
-                return;
-            }
+        Assert.True(result.IsValid);
+        Assert.NotNull(dbRecord);
 
-            dbRecord.Should().NotBeNull();
-
-            InlineSnapshot
-                .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
-                .Validate(dbRecord, """
-                    EntityType: Variant
-                    ParentPath: /addvariantch-canaddwithoptionalpropertiesmk/addvariantch-canaddwithoptionalpropertiesmd
-                    PublicId: addvariantch-canaddwithoptionalproperties
-                    Name: AddVariantCH_CanAddWithOptionalProperties
-                    CreateDate: 2024-07-16T08:23:56
-                    VariantData:
-                      FuelCategory: Petrol
-                      EngineSizeInCC: 4300
-                    """);
-        }
+        InlineSnapshot
+            .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
+            .Validate(dbRecord, """
+                EntityType: Variant
+                ParentPath: /addvariantch-canaddwithoptionalpropertiesmk/addvariantch-canaddwithoptionalpropertiesmd
+                PublicId: addvariantch-canaddwithoptionalproperties
+                Name: AddVariantCH_CanAddWithOptionalProperties
+                CreateDate: 2024-07-16T08:23:56
+                VariantData:
+                  FuelCategory: Petrol
+                  EngineSizeInCC: 4300
+                """);
     }
 
     [Fact]
@@ -125,15 +109,13 @@ public class AddVariantCommandHandlerTests
             Name = id
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddVariantCommand.ModelId));
-            error.Message.Should().MatchEquivalentOf("*model*exist*");
-            result.Result.Should().BeNull();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(AddVariantCommand.ModelId), error.Property);
+        Assert.Contains("Model does not exist", error.Message);
+        Assert.Null(result.Result);
     }
 
     [Theory]
@@ -155,14 +137,12 @@ public class AddVariantCommandHandlerTests
             Name = "na"
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddVariantCommand.ModelId));
-            result.Result.Should().BeNull();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(AddVariantCommand.ModelId), error.Property);
+        Assert.Null(result.Result);
     }
 
     [Theory]
@@ -183,14 +163,12 @@ public class AddVariantCommandHandlerTests
             Name = name!
         });
 
-        using (new AssertionScope())
-        {
-            result.IsValid.Should().BeFalse();
-            result.ValidationErrors.Should().HaveCount(1);
-            var error = result.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddVariantCommand.Name));
-            result.Result.Should().BeNull();
-        }
+        Assert.False(result.IsValid);
+        Assert.Single(result.ValidationErrors);
+
+        var error = result.ValidationErrors.First();
+        Assert.Equal(nameof(AddVariantCommand.Name), error.Property);
+        Assert.Null(result.Result);
     }
 
     [Fact]
@@ -219,15 +197,12 @@ public class AddVariantCommandHandlerTests
             Name = name
         });
 
-        using (new AssertionScope())
-        {
-            result1.IsValid.Should().BeTrue();
-            result2.IsValid.Should().BeFalse();
-            result2.ValidationErrors.Should().HaveCount(1);
+        Assert.True(result1.IsValid);
+        Assert.False(result2.IsValid);
+        Assert.Single(result2.ValidationErrors);
 
-            var error = result2.ValidationErrors.First();
-            error.Property.Should().Be(nameof(AddVariantCommand.Name));
-            error.Message.Should().Match("*already exists*");
-        }
+        var error = result2.ValidationErrors.First();
+        Assert.Equal(nameof(AddVariantCommand.Name), error.Property);
+        Assert.Contains("already exists", error.Message);
     }
 }

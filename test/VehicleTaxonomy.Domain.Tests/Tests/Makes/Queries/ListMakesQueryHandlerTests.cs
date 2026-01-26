@@ -9,7 +9,6 @@ namespace VehicleTaxonomy.Domain.Tests.Makes.Queries;
 public class ListMakesQueryHandlerTests
 {
     private const string UniquePrefix = "ListMakesQH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public ListMakesQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -31,23 +30,21 @@ public class ListMakesQueryHandlerTests
 
         var response = await handler.ExecuteAsync(new());
 
+        Assert.True(response.IsValid);
+        Assert.NotNull(response.Result);
+        Assert.NotEmpty(response.Result);
+
         var filteredResults = EnumerableHelper
             .Enumerate(response.Result)
             .Where(r => r.Name.StartsWith(name1))
             .ToArray();
 
-        using (new AssertionScope())
-        {
-            response.IsValid.Should().BeTrue();
-            response.Result.Should().NotBeNullOrEmpty();
-
-            InlineSnapshot.Validate(filteredResults, """
-                - MakeId: listmakesqh-canreturnunfiltered
-                  Name: ListMakesQH_CanReturnUnfiltered
-                - MakeId: listmakesqh-canreturnunfiltered2
-                  Name: ListMakesQH_CanReturnUnfiltered2
-                """);
-        }
+        InlineSnapshot.Validate(filteredResults, """
+            - MakeId: listmakesqh-canreturnunfiltered
+              Name: ListMakesQH_CanReturnUnfiltered
+            - MakeId: listmakesqh-canreturnunfiltered2
+              Name: ListMakesQH_CanReturnUnfiltered2
+            """);
     }
 
     [Fact]
@@ -70,22 +67,21 @@ public class ListMakesQueryHandlerTests
             Name = name2
         });
 
+
+        Assert.True(response.IsValid);
+        Assert.NotNull(response.Result);
+        Assert.NotEmpty(response.Result);
+
         var filteredResults = EnumerableHelper
             .Enumerate(response.Result)
             .Where(r => r.Name.StartsWith(namePrefix))
             .ToArray();
 
-        using (new AssertionScope())
-        {
-            response.IsValid.Should().BeTrue();
-            response.Result.Should().NotBeNullOrEmpty();
-
-            InlineSnapshot.Validate(filteredResults, """
-                - MakeId: listmakesqh-canfilterbynametwo
-                  Name: ListMakesQH_CanFilterByNameTwo
-                - MakeId: listmakesqh-canfilterbynametwoone
-                  Name: ListMakesQH_CanFilterByNametwoOne
-                """);
-        }
+        InlineSnapshot.Validate(filteredResults, """
+            - MakeId: listmakesqh-canfilterbynametwo
+              Name: ListMakesQH_CanFilterByNameTwo
+            - MakeId: listmakesqh-canfilterbynametwoone
+              Name: ListMakesQH_CanFilterByNametwoOne
+            """);
     }
 }

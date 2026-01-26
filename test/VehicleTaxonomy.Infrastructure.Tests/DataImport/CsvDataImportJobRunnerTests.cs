@@ -1,5 +1,4 @@
 using System.Text;
-using FluentAssertions.Execution;
 using nietras.SeparatedValues;
 using VehicleTaxonomy.Infrastructure.DataImport;
 
@@ -24,7 +23,7 @@ public class CsvDataImportJobRunnerTests
         var jobRunner = new CsvDataImportJobRunner(_logger);
         var result = await jobRunner.RunAsync(stream, job);
 
-        count.Should().Be(0);
+        Assert.Equal(0, count);
         InlineSnapshot.Validate(result, """
             Status: Finished
             SkippedReasons: {}
@@ -52,17 +51,14 @@ public class CsvDataImportJobRunnerTests
         var jobRunner = new CsvDataImportJobRunner(_logger);
         var result = await jobRunner.RunAsync(stream, job);
 
-        using (new AssertionScope())
-        {
-            mapCount.Should().Be(3);
-            saveCount.Should().Be(2);
-            InlineSnapshot.Validate(result, """
-                NumSuccess: 2
-                Status: Finished
-                SkippedReasons: {}
-                ValidationErrors: {}
-                """);
-        }
+        Assert.Equal(3, mapCount);
+        Assert.Equal(2, saveCount);
+        InlineSnapshot.Validate(result, """
+            NumSuccess: 2
+            Status: Finished
+            SkippedReasons: {}
+            ValidationErrors: {}
+            """);
     }
 
     [Fact]
@@ -91,23 +87,20 @@ public class CsvDataImportJobRunnerTests
         var jobRunner = new CsvDataImportJobRunner(_logger);
         var result = await jobRunner.RunAsync(stream, job);
 
-        using (new AssertionScope())
-        {
-            InlineSnapshot.Validate(result, """
-                NumSkipped: 3
-                NumInvalid: 2
-                Status: Finished
-                SkippedReasons:
-                  test reason:
-                    - 0
-                    - 2
-                    - 4
-                ValidationErrors:
-                  test error:
-                    - 1
-                    - 3
-                """);
-        }
+        InlineSnapshot.Validate(result, """
+            NumSkipped: 3
+            NumInvalid: 2
+            Status: Finished
+            SkippedReasons:
+              test reason:
+                - 0
+                - 2
+                - 4
+            ValidationErrors:
+              test error:
+                - 1
+                - 3
+            """);
     }
 
     [Fact]
@@ -133,15 +126,12 @@ public class CsvDataImportJobRunnerTests
         var jobRunner = new CsvDataImportJobRunner(_logger);
         var result = await jobRunner.RunAsync(stream, job);
 
-        using (new AssertionScope())
-        {
-            InlineSnapshot.Validate(result, """
-                NumSuccess: 2
-                Status: FatalError
-                SkippedReasons: {}
-                ValidationErrors: {}
-                """);
-        }
+        InlineSnapshot.Validate(result, """
+            NumSuccess: 2
+            Status: FatalError
+            SkippedReasons: {}
+            ValidationErrors: {}
+            """);
     }
 
     [Fact]
@@ -169,23 +159,21 @@ public class CsvDataImportJobRunnerTests
         var jobRunner = new CsvDataImportJobRunner(_logger);
         var result = await jobRunner.RunAsync(stream, job);
 
-        using (new AssertionScope())
-        {
-            maxBatchSize.Should().Be(2);
-            batchCount.Should().Be(4);
-            InlineSnapshot.Validate(result, """
-                NumSuccess: 7
-                Status: Finished
-                SkippedReasons: {}
-                ValidationErrors: {}
-                """);
-        }
+        Assert.Equal(2, maxBatchSize);
+        Assert.Equal(4, batchCount);
+        InlineSnapshot.Validate(result, """
+            NumSuccess: 7
+            Status: Finished
+            SkippedReasons: {}
+            ValidationErrors: {}
+            """);
     }
 
     private static MemoryStream CreateCsv(string headers, params string[] rows)
     {
         var csv = $"{headers}{Environment.NewLine}{string.Join(Environment.NewLine, rows)}";
         var bytes = Encoding.UTF8.GetBytes(csv);
+
         return new MemoryStream(bytes);
     }
 
