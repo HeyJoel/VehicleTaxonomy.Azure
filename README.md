@@ -2,14 +2,14 @@
 
 An example of a microservice that can be used to classify vehicles by make, model and variant. I have used this microservice to explore the Azure serverless stack, specifically:
 
-- Functions (.NET 8)
+- Functions (.NET 10)
 - CosmosDb
 - Bicep
 - Azure Pipelines
 
 This example is also available in the following stacks:
 
-- [AWS Serverless (Lambda, DynamoDb, SAM)](https://github.com/HeyJoel/VehicleTaxonomy.Aws) 
+- [AWS Serverless (Lambda, DynamoDb, SAM)](https://github.com/HeyJoel/VehicleTaxonomy.Aws)
 
 ## Contents
 
@@ -53,7 +53,7 @@ An export of the data from 2024 can be found in the data directory at [/data/Mak
 
 This data does not explicitly include a variant or derivative so we will need to construct one from the "Model", "Fuel" and "EngineSizeSimple" columns in the CSV. Confusingly, it will be the CSV "GenModel" value (AKA "Generation" Model) that we will use for our interpretation of a vehicle "Model", as this value best aligns with a customer expectations when, for example, filtering vehicle selection by model.
 
-The dataset also include data for non-car vehicle types, but including this data is a non-goal. 
+The dataset also include data for non-car vehicle types, but including this data is a non-goal.
 
 ### Database Design: CosmosDb
 
@@ -95,7 +95,7 @@ Here's an example variant entry:
 
 ### API Endpoints: Functions
 
-Currently there's two approaches to developing Azure Functions in .NET, ["in-process" and "isolated"](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences). This example uses the isolated worker model because it is the recommended approach, with support for the in-process model ending in Nov 2024. The [Durable Functions](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=in-process%2Cnodejs-v3%2Cv1-model&pivots=csharp) framework is used to handle the long running data import process. 
+Currently there's two approaches to developing Azure Functions in .NET, ["in-process" and "isolated"](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences). This example uses the isolated worker model because it is the recommended approach, with support for the in-process model ending in Nov 2024. The [Durable Functions](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=in-process%2Cnodejs-v3%2Cv1-model&pivots=csharp) framework is used to handle the long running data import process.
 
 Auth is not covered by this example project so all API functions are set to allow anonymous access.
 
@@ -114,11 +114,13 @@ This example deals only with Azure resources so I've chosen to use Bicep.
 
 ### Prerequisits
 
-- .NET 8 SDK
-- [Visual Studio Azure workload](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?pivots=isolated#prerequisites) or equivalent tooling for your environment
-- Docker environment e.g. [Docker Desktop](https://qubitpi.github.io/docker-docs/get-docker/).
+- .NET 10 SDK
+- [Visual Studio Azure workload](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?pivots=isolated#prerequisites) or equivalent tooling for your environment e.g. [Azure tools for Rider](https://www.jetbrains.com/guide/dotnet/tutorials/rider-essentials/cloud-azure/)
+- Docker engine e.g. via [Docker Desktop](https://qubitpi.github.io/docker-docs/get-docker/), [Rancher Desktop](https://rancherdesktop.io/) etc.
 
-Tested on Visual Studio 2022 and Docker Desktop for Windows with WSL2, but other environments should be supported.
+Tested on 
+- Windows: Visual Studio 2026 and Docker Desktop for Windows with WSL2
+- Ubuntu: Rider and Docker Engine 
 
 ### Running the API
 
@@ -134,7 +136,7 @@ The local ComsosDb emulator can take a while to startup, so make sure you wait u
 
 #### 2. Initialize local resources
 
-IaC is used for resource creation in Azure, but this cannot be run against local emulators. For your local API environment you can run the [VehicleTaxonomy.Azure.LocalInfraInitializer](src/VehicleTaxonomy.Azure.LocalInfraInitializer) console app to create the required CosmosDb containers and Azure Storage accounts. 
+IaC is used for resource creation in Azure, but this cannot be run against local emulators. For your local API environment you can run the [VehicleTaxonomy.LocalInfraInitializer](src/VehicleTaxonomy.LocalInfraInitializer) console app to create the required CosmosDb containers and Azure Storage accounts.
 
 First set the connection strings in [your local user secrets configuration](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) to match the following, then run the console app:
 
@@ -154,11 +156,11 @@ Note that the above keys are public, well known keys for the Azure emulators.
 
 #### 3. Configure the API project
 
-Next configure the [VehicleTaxonomy.Azure.Api](src/VehicleTaxonomy.Azure.Api) project to connect to your local docker resources by [configuring your user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) with the same settings used in step 2.
+Next configure the [VehicleTaxonomy.Api](src/VehicleTaxonomy.Api) project to connect to your local docker resources by [configuring your user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) with the same settings used in step 2.
 
 #### 4. Run the API project
 
-Start up the [VehicleTaxonomy.Azure.Api](src/VehicleTaxonomy.Azure.Api) project. 
+Start up the [VehicleTaxonomy.Api](src/VehicleTaxonomy.Api) project.
 
 - Swagger API docs are available at `http://localhost:7177/api/swagger/ui`.
 - The docker-based CosmosDb emulator GUI is available at `https://localhost:8081/_explorer/index.html`
@@ -171,7 +173,7 @@ Many of the domain project tests run integrated with a local CosmosDb instance p
 docker compose -f docker-compose.dev.yml up
 ```
 
-Then change the connection string in your `VehicleTaxonomy.Azure.Domain.Tests` project [user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) configuration:
+Then change the connection string in your `VehicleTaxonomy.Domain.Tests` project [user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#use-visual-studio) configuration:
 
 ```json
 {
@@ -186,7 +188,7 @@ Tests are run against a separate CosmosDb database, so there's no conflict with 
 
 #### E2E tests
 
-There are currently no tests for the `VehicleTaxonomy.Azure.Api` project due to [a lack of test server support in Azure Functions](https://github.com/Azure/azure-functions-dotnet-worker/issues/281). [Issue 1](https://github.com/HeyJoel/VehicleTaxonomy.Azure/issues/1) covers resolving this. 
+There are currently no tests for the `VehicleTaxonomy.Api` project due to [a lack of test server support in Azure Functions](https://github.com/Azure/azure-functions-dotnet-worker/issues/281). [Issue 1](https://github.com/HeyJoel/VehicleTaxonomy.Azure/issues/1) covers resolving this.
 
 ## Deployment
 
@@ -198,7 +200,7 @@ Azure resources are deployed via [Bicep](https://learn.microsoft.com/en-us/azure
 
 #### Deploying the Functions App
 
-Once the infrastructure is in place you can deploy the `VehicleTaxonomy.Azure.Api` functions project either via the [Visual Studio publish dialog](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?pivots=isolated#publish-to-azure) or via the command line with [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local). No additional application configuration is required, it is all handled by the bicep files.
+Once the infrastructure is in place you can deploy the `VehicleTaxonomy.Api` functions project either via the [Visual Studio publish dialog](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs?pivots=isolated#publish-to-azure) or via the command line with [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local). No additional application configuration is required, it is all handled by the bicep files.
 
 ### CI/CD Deployment
 
@@ -214,6 +216,6 @@ Swagger API docs are available at `/api/swagger/ui`.
 
 > [Bruno](https://www.usebruno.com/) is an open source API client similar to postman, but does not require a login and saves API collections to your file system.
 
-A [Bruno](https://www.usebruno.com/) API collection is available in the [/docs/api](/docs/api) folder, all you need to do is add a `baseUrl` environment variable for your functions deployment. 
+A [Bruno](https://www.usebruno.com/) API collection is available in the [/docs/api](/docs/api) folder, all you need to do is add a `baseUrl` environment variable for your functions deployment e.g. for local dev this would have the value `http://localhost:7177/api`.
 
 ![API docs in the Bruno app](docs/images/bruno-api-docs.png)

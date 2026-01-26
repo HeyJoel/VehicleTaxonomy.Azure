@@ -5,15 +5,11 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/data-import/taxonomy/01J55QJ7YJCBX8FJHB4YVPXN6S
-  body: multipartForm
+  url: {{baseUrl}}/data-import/taxonomy/01KFXEQY1T4FHDNM7DAY0BMMTN
+  body: none
   auth: none
 }
 
-headers {
-  Content-Type: text/csv
-}
-
 body:multipart-form {
-  file: @file(C:\Dev\Examples\VehicleTaxonomy.Azure\data\MakesModelsFuelType.csv)
+  ~file: @file(C:\Dev\Examples\VehicleTaxonomy\data\MakesModelsFuelType.csv)
 }

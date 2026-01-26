@@ -12,6 +12,7 @@ services:
     azureite:
         container_name: azurite
         image: mcr.microsoft.com/azure-storage/azurite
+        command: "azurite --blobHost 0.0.0.0 --skipApiVersionCheck"
         ports:
             - 18080:10000
         volumes:

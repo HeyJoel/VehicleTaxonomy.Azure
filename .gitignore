@@ -85,9 +85,11 @@ ehthumbs.db
 node_modules/
 appsettings.local.json
 .vscode
+.idea/*
 
 docs/api/environments/*.bru
+!docs/api/environments/local.bru
 /docker
 .~lock.*
-src/VehicleTaxonomy.Azure.Api/Properties/serviceDependencies.func-*.json
-src/VehicleTaxonomy.Azure.Api/Properties/ServiceDependencies/func-*
+src/VehicleTaxonomy.Api/Properties/serviceDependencies.func-*.json
+src/VehicleTaxonomy.Api/Properties/ServiceDependencies/func-*

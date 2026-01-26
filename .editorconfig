@@ -248,6 +248,9 @@ dotnet_diagnostic.CA2246.severity = warning
 # CA2249: Use string.Contains instead of string.IndexOf to improve readability.
 dotnet_diagnostic.CA2249.severity = warning
 
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = suggestion
+
 # IDE0005: Remove unnecessary usings
 dotnet_diagnostic.IDE0005.severity = warning
 
@@ -298,6 +301,10 @@ dotnet_diagnostic.IDE0060.severity = warning
 # IDE0062: Make local function static
 dotnet_diagnostic.IDE0062.severity = warning
 
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = none
+resharper_check_namespace_highlighting=none
+
 # IDE0161: Convert to file-scoped namespace
 dotnet_diagnostic.IDE0161.severity = warning
 
@@ -316,3 +323,28 @@ dotnet_diagnostic.IDE0270.severity = silent
 
 # IDE0290: Use primary constructor
 dotnet_diagnostic.IDE0290.severity = silent
+resharper_convert_to_primary_constructor_highlighting=none
+
+# Resharper - false positives and undesirable suggestions
+resharper_arrange_object_creation_when_type_not_evident_highlighting=none
+resharper_property_can_be_made_init_only_global_highlighting=none
+resharper_property_can_be_made_init_only_local_highlighting=none
+resharper_member_can_be_private_global_highlighting=hint
+resharper_convert_if_statement_to_return_statement_highlighting=none
+resharper_separate_local_functions_with_jump_statement_highlighting=none
+resharper_auto_property_can_be_made_get_only_global_highlighting=none
+resharper_unused_member_global_highlighting=none
+resharper_unused_member_in_super_global_highlighting=none
+
+# xUnit1051: Calls to methods which accept CancellationToken should use TestContext.Current.CancellationToken
+dotnet_diagnostic.xUnit1051.severity = silent
+
+# Verify settings
+[*.{received,verified}.{json,txt,xml}]
+charset = utf-8-bom
+end_of_line = lf
+indent_size = unset
+indent_style = unset
+insert_final_newline = false
+tab_width = unset
+trim_trailing_whitespace = false

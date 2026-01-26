@@ -1,0 +1,26 @@
+using Microsoft.Extensions.DependencyInjection;
+using VehicleTaxonomy.Infrastructure.Db;
+using VehicleTaxonomy.Infrastructure.Files;
+using VehicleTaxonomy.LocalInfraInitializer;
+
+// Console app for creating resources on local emulator instances
+// Used only to init a development environment for running the API
+// project locally. For Azure infra we use IaC.
+
+Console.WriteLine("Initializing Infra");
+
+var rootServiceProvider = HostServiceProvider.CreateServiceProvider();
+
+using var scope = rootServiceProvider.CreateScope();
+
+var initializer = scope.ServiceProvider.GetRequiredService<CosmosDbContainerInitializer>();
+Console.WriteLine("Initializing Cosmos");
+await initializer.CreateIfNotExistsAsync(VehicleTaxonomyContainerDefinition.Instance);
+
+var blobClientFactory = scope.ServiceProvider.GetRequiredService<BlobClientFactory>();
+var blobClient = blobClientFactory.GetContainerClient(TaxonomyImportBlobContainer.ContainerName);
+
+Console.WriteLine("Initializing BlobStorage");
+await blobClient.CreateIfNotExistsAsync();
+
+Console.WriteLine("Done");
