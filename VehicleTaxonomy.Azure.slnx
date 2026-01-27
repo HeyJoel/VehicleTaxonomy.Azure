@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/App/">
+    <Project Path="src/VehicleTaxonomy.Api/VehicleTaxonomy.Api.csproj" />
+    <Project Path="src/VehicleTaxonomy.LocalInfraInitializer/VehicleTaxonomy.LocalInfraInitializer.csproj" />
+  </Folder>
+  <Folder Name="/BackEnd/">
+    <Project Path="src/VehicleTaxonomy.Domain/VehicleTaxonomy.Domain.csproj" />
+    <Project Path="src/VehicleTaxonomy.Infrastructure/VehicleTaxonomy.Infrastructure.csproj" />
+    <Project Path="test/VehicleTaxonomy.Domain.Tests/VehicleTaxonomy.Domain.Tests.csproj" />
+    <Project Path="test/VehicleTaxonomy.Infrastructure.Tests/VehicleTaxonomy.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>
