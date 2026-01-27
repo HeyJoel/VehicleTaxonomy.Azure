@@ -23,7 +23,7 @@ public sealed class DbDependentFixture : IAsyncLifetime
     /// </summary>
     public static DateTimeOffset SeedDate => new(2024, 07, 16, 08, 23, 56, TimeSpan.Zero);
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var configuration = BuildConfiguration();
         var options = OptionsBinder.Bind<CosmosDbOptions>(configuration, CosmosDbOptions.SectionName);
@@ -31,7 +31,8 @@ public sealed class DbDependentFixture : IAsyncLifetime
         if (string.IsNullOrEmpty(options.ConnectionString))
         {
             // Note: we cannot pin a version because the CosmosDb image has an issue with trial expiry
-            // that makes old container images fail
+            // that makes old container images fail.
+            // See https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/264#issuecomment-3799371448
             _container = new CosmosDbBuilder("mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest").Build();
             await _container.StartAsync();
         }
@@ -95,11 +96,14 @@ public sealed class DbDependentFixture : IAsyncLifetime
             .Build();
     }
 
-    public Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         (ServiceProvider as IDisposable)?.Dispose();
         var task = _container?.DisposeAsync().AsTask();
 
-        return task ?? Task.CompletedTask;
+        if (task is not null)
+        {
+            await task;
+        }
     }
 }
