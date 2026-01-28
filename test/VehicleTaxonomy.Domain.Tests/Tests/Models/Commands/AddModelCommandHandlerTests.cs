@@ -1,13 +1,13 @@
 using Meziantou.Framework.InlineSnapshotTesting;
 using Microsoft.Extensions.DependencyInjection;
 using VehicleTaxonomy.Domain.Models;
+using VehicleTaxonomy.Infrastructure.Db;
 
 namespace VehicleTaxonomy.Domain.Tests.Models.Commands;
 
 [Collection(nameof(DbDependentFixtureCollection))]
 public class AddModelCommandHandlerTests
 {
-    private const string UniquePrefix = "AddModelCH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public AddModelCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -18,15 +18,14 @@ public class AddModelCommandHandlerTests
     [Fact]
     public async Task WhenValid_CanAdd()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenValid_CanAdd);
-        const string name = uniqueData;
-        const string id = "addmodelch-whenvalid-canadd";
+        var name = ScopedString.FromMethodName(VehicleTaxonomyContainerDefinition.ModelNameMaxLength);
+        var id = EntityIdFormatter.Format(name);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddModelCommandHandler>();
         var modelTestHelper = scope.ServiceProvider.GetRequiredService<ModelTestHelper>();
 
-        var makeId = await modelTestHelper.AddMakeAsync(uniqueData + "mk");
+        var makeId = await modelTestHelper.AddMakeAsync(name + "mk");
         var result = await handler.ExecuteAsync(new()
         {
             MakeId = makeId,
@@ -53,7 +52,7 @@ public class AddModelCommandHandlerTests
     [Fact]
     public async Task WhenMakeNotExists_ReturnsError()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenMakeNotExists_ReturnsError);
+        var uniqueData = ScopedString.FromMethodName(VehicleTaxonomyContainerDefinition.ModelNameMaxLength);
         var id = EntityIdFormatter.Format(uniqueData);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
@@ -128,14 +127,13 @@ public class AddModelCommandHandlerTests
     [Fact]
     public async Task WhenNameNotUnique_ReturnsError()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenNameNotUnique_ReturnsError);
-        const string name = uniqueData;
+        var name = ScopedString.FromMethodName(VehicleTaxonomyContainerDefinition.ModelNameMaxLength);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddModelCommandHandler>();
         var modelTestHelper = scope.ServiceProvider.GetRequiredService<ModelTestHelper>();
 
-        var makeId = await modelTestHelper.AddMakeAsync(uniqueData + "mk");
+        var makeId = await modelTestHelper.AddMakeAsync(name + "mk");
 
         var result1 = await handler.ExecuteAsync(new()
         {

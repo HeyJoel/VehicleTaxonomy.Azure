@@ -19,8 +19,8 @@ public class ListMakesQueryHandlerTests
     [Fact]
     public async Task CanReturnUnfiltered()
     {
-        const string name1 = UniquePrefix + nameof(CanReturnUnfiltered);
-        const string name2 = name1 + "2";
+        var name1 = ScopedString.FromMethodName(49);
+        var name2 = name1 + "2";
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ListMakesQueryHandler>();
@@ -62,10 +62,7 @@ public class ListMakesQueryHandlerTests
         await makeTestHelper.AddMakeAsync(name2);
         await makeTestHelper.AddMakeAsync(name21);
 
-        var response = await handler.ExecuteAsync(new()
-        {
-            Name = name2
-        });
+        var response = await handler.ExecuteAsync(new() { Name = name2 });
 
 
         Assert.True(response.IsValid);

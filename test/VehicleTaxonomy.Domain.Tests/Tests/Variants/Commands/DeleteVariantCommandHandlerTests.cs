@@ -6,7 +6,6 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Commands;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class DeleteVariantCommandHandlerTests
 {
-    private const string UNIQUE_PREFIX = "DelVariantCH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public DeleteVariantCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -17,7 +16,7 @@ public class DeleteVariantCommandHandlerTests
     [Fact]
     public async Task CanDelete()
     {
-        const string uniqueData = UNIQUE_PREFIX + nameof(CanDelete);
+        var uniqueData = ScopedString.FromMethodName(48);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<DeleteVariantCommandHandler>();
@@ -94,7 +93,7 @@ public class DeleteVariantCommandHandlerTests
     [Fact]
     public async Task WhenNotExists_ReturnsError()
     {
-        const string uniqueData = UNIQUE_PREFIX + nameof(WhenNotExists_ReturnsError);
+        var uniqueData = ScopedString.FromMethodName(50);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<DeleteVariantCommandHandler>();

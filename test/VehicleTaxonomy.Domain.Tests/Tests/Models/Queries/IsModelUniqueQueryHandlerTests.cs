@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using VehicleTaxonomy.Domain.Models;
+using VehicleTaxonomy.Infrastructure.Db;
 
 namespace VehicleTaxonomy.Domain.Tests.Models.Queries;
 
 [Collection(nameof(DbDependentFixtureCollection))]
 public class IsModelUniqueQueryHandlerTests
 {
-    private const string UniquePrefix = "IsModelUniqueQH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public IsModelUniqueQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -17,14 +17,13 @@ public class IsModelUniqueQueryHandlerTests
     [Fact]
     public async Task WhenUnique_ReturnsTrue()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenUnique_ReturnsTrue);
-        var name = uniqueData;
+        var name = ScopedString.FromMethodName(VehicleTaxonomyContainerDefinition.ModelNameMaxLength);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsModelUniqueQueryHandler>();
         var modelTestHelper = scope.ServiceProvider.GetRequiredService<ModelTestHelper>();
-        var make1Id = await modelTestHelper.AddMakeAsync(uniqueData);
-        var make2Id = await modelTestHelper.AddMakeAsync(uniqueData + "ignored");
+        var make1Id = await modelTestHelper.AddMakeAsync(name);
+        var make2Id = await modelTestHelper.AddMakeAsync(name + "ignored");
         await modelTestHelper.AddModelAsync(make1Id, name + "ignored");
         await modelTestHelper.AddModelAsync(make2Id, name);
 
@@ -41,7 +40,7 @@ public class IsModelUniqueQueryHandlerTests
     [Fact]
     public async Task WhenMakeNotExists_ReturnsFalse()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenMakeNotExists_ReturnsFalse);
+        var uniqueData = ScopedString.FromMethodName(VehicleTaxonomyContainerDefinition.ModelNameMaxLength);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsModelUniqueQueryHandler>();
@@ -115,14 +114,13 @@ public class IsModelUniqueQueryHandlerTests
     [Fact]
     public async Task WhenNameNotUnique_ReturnsFalse()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenNameNotUnique_ReturnsFalse);
-        const string name = uniqueData;
+        var name = ScopedString.FromMethodName(VehicleTaxonomyContainerDefinition.ModelNameMaxLength);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsModelUniqueQueryHandler>();
         var modelTestHelper = scope.ServiceProvider.GetRequiredService<ModelTestHelper>();
 
-        var makeId = await modelTestHelper.AddMakeAsync(uniqueData);
+        var makeId = await modelTestHelper.AddMakeAsync(name);
         await modelTestHelper.AddModelAsync(makeId, name);
 
         var result = await handler.ExecuteAsync(new()

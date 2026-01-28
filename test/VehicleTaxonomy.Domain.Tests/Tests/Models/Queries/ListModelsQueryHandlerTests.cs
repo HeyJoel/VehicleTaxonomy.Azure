@@ -8,7 +8,6 @@ namespace VehicleTaxonomy.Domain.Tests.Models.Queries;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class ListModelsQueryHandlerTests
 {
-    private const string UniquePrefix = "ListModelsQH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public ListModelsQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -19,9 +18,9 @@ public class ListModelsQueryHandlerTests
     [Fact]
     public async Task CanReturnUnfiltered()
     {
-        const string uniqueData = UniquePrefix + nameof(CanReturnUnfiltered);
-        const string name1 = uniqueData + "1";
-        const string name2 = name1 + "2";
+        var uniqueData = ScopedString.FromMethodName(49);
+        var name1 = uniqueData + "1";
+        var name2 = name1 + "2";
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ListModelsQueryHandler>();
@@ -33,10 +32,7 @@ public class ListModelsQueryHandlerTests
         await modelTestHelper.AddModelAsync(make1Id, name1);
         await modelTestHelper.AddModelAsync(make2Id, name1);
 
-        var response = await handler.ExecuteAsync(new()
-        {
-            MakeId = make1Id
-        });
+        var response = await handler.ExecuteAsync(new() { MakeId = make1Id });
 
         Assert.True(response.IsValid);
         Assert.NotNull(response.Result);

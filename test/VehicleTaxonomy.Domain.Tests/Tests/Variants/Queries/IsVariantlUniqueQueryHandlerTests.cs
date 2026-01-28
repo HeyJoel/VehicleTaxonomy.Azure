@@ -6,7 +6,6 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Queries;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class IsVariantUniqueQueryHandlerTests
 {
-    private const string UniquePrefix = "IsVariantUniqueQH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public IsVariantUniqueQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -17,14 +16,13 @@ public class IsVariantUniqueQueryHandlerTests
     [Fact]
     public async Task WhenUnique_ReturnsTrue()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenUnique_ReturnsTrue);
-        var name = uniqueData;
+        var name = ScopedString.FromMethodName(48);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsVariantUniqueQueryHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
-        var (make1Id, model1Id) = await variantTestHelper.AddModelWithMakeAsync(uniqueData);
-        var (make2Id, model2Id) = await variantTestHelper.AddModelWithMakeAsync(uniqueData + "ignored");
+        var (make1Id, model1Id) = await variantTestHelper.AddModelWithMakeAsync(name);
+        var (make2Id, model2Id) = await variantTestHelper.AddModelWithMakeAsync(name + "ignored");
         await variantTestHelper.AddVariantAsync(make1Id, model1Id, name + "ignored");
         await variantTestHelper.AddVariantAsync(make2Id, model2Id, name);
 
@@ -42,8 +40,9 @@ public class IsVariantUniqueQueryHandlerTests
     [Fact]
     public async Task WhenModelNotExists_ReturnsFalse()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenModelNotExists_ReturnsFalse);
+        var uniqueData = ScopedString.FromMethodName(50);
         var id = EntityIdFormatter.Format(uniqueData);
+
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsVariantUniqueQueryHandler>();
 
@@ -95,7 +94,8 @@ public class IsVariantUniqueQueryHandlerTests
     [InlineData("")]
     [InlineData("  ")]
     [InlineData("!!!")]
-    [InlineData("Lorem ipsum dolor amet, consectetur adipiscing elit Lorem ipsum dolor amet, consectetur adipiscing el")]
+    [InlineData(
+        "Lorem ipsum dolor amet, consectetur adipiscing elit Lorem ipsum dolor amet, consectetur adipiscing el")]
     public async Task WhenNameInvalid_ReturnsError(string? name)
     {
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
@@ -119,14 +119,13 @@ public class IsVariantUniqueQueryHandlerTests
     [Fact]
     public async Task WhenNameNotUnique_ReturnsFalse()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenNameNotUnique_ReturnsFalse);
-        const string name = uniqueData;
+        var name = ScopedString.FromMethodName(48);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsVariantUniqueQueryHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
 
-        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(uniqueData);
+        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name);
         await variantTestHelper.AddVariantAsync(makeId, modelId, name);
 
         var result = await handler.ExecuteAsync(new()

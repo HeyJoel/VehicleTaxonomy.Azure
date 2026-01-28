@@ -7,8 +7,6 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Commands;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class AddVariantCommandHandlerTests
 {
-    private const string UniquePrefix = "AddVariantCH_";
-
     private readonly DbDependentFixture _dbDependentFixture;
 
     public AddVariantCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -19,15 +17,14 @@ public class AddVariantCommandHandlerTests
     [Fact]
     public async Task WhenValid_CanAdd()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenValid_CanAdd);
-        const string name = uniqueData;
-        const string id = "addvariantch-whenvalid-canadd";
+        var name = ScopedString.FromMethodName(50);
+        var id = EntityIdFormatter.Format(name);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
 
-        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(uniqueData);
+        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name);
         var result = await handler.ExecuteAsync(new()
         {
             MakeId = makeId,
@@ -56,15 +53,14 @@ public class AddVariantCommandHandlerTests
     [Fact]
     public async Task CanAddWithOptionalProperties()
     {
-        const string uniqueData = UniquePrefix + nameof(CanAddWithOptionalProperties);
-        const string name = uniqueData;
-        var id = EntityIdFormatter.Format(uniqueData);
+        var name = ScopedString.FromMethodName(48);
+        var id = EntityIdFormatter.Format(name);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
 
-        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(uniqueData);
+        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name);
         var result = await handler.ExecuteAsync(new()
         {
             MakeId = makeId,
@@ -96,8 +92,8 @@ public class AddVariantCommandHandlerTests
     [Fact]
     public async Task WhenModelNotExists_ReturnsError()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenModelNotExists_ReturnsError);
-        var id = EntityIdFormatter.Format(uniqueData);
+        var name = ScopedString.FromMethodName(50);
+        var id = EntityIdFormatter.Format(name);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
@@ -150,7 +146,8 @@ public class AddVariantCommandHandlerTests
     [InlineData("")]
     [InlineData("  ")]
     [InlineData("!!!")]
-    [InlineData("Lorem ipsum dolor amet, consectetur adipiscing elit lorem ipsum dolor amet, consectetur adipiscing el")]
+    [InlineData(
+        "Lorem ipsum dolor amet, consectetur adipiscing elit lorem ipsum dolor amet, consectetur adipiscing el")]
     public async Task WhenNameInvalid_ReturnsError(string? name)
     {
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
@@ -174,14 +171,13 @@ public class AddVariantCommandHandlerTests
     [Fact]
     public async Task WhenNameNotUnique_ReturnsError()
     {
-        const string uniqueData = UniquePrefix + nameof(WhenNameNotUnique_ReturnsError);
-        const string name = uniqueData;
+        var name = ScopedString.FromMethodName(48);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
 
-        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(uniqueData + "mk");
+        var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name + "mk");
 
         var result1 = await handler.ExecuteAsync(new()
         {

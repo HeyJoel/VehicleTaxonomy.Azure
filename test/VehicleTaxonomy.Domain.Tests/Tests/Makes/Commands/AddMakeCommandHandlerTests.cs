@@ -7,7 +7,6 @@ namespace VehicleTaxonomy.Domain.Tests.Makes.Commands;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class AddMakeCommandHandlerTests
 {
-    private const string UniquePrefix = "AddMakeCH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public AddMakeCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -18,17 +17,14 @@ public class AddMakeCommandHandlerTests
     [Fact]
     public async Task WhenValid_CanAdd()
     {
-        const string name = UniquePrefix + nameof(WhenValid_CanAdd);
-        const string id = "addmakech-whenvalid-canadd";
+        var name = ScopedString.FromMethodName(50);
+        var id = EntityIdFormatter.Format(name);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddMakeCommandHandler>();
         var makeTestHelper = scope.ServiceProvider.GetRequiredService<MakeTestHelper>();
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            Name = name
-        });
+        var result = await handler.ExecuteAsync(new() { Name = name });
 
         var dbRecord = await makeTestHelper.GetRawDocumentAsync(id);
 
@@ -57,10 +53,7 @@ public class AddMakeCommandHandlerTests
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddMakeCommandHandler>();
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            Name = name!
-        });
+        var result = await handler.ExecuteAsync(new() { Name = name! });
 
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);
@@ -73,20 +66,13 @@ public class AddMakeCommandHandlerTests
     [Fact]
     public async Task WhenNameNotUnique_ReturnsError()
     {
-        const string name = UniquePrefix + nameof(WhenNameNotUnique_ReturnsError);
+        var name = ScopedString.FromMethodName(50);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddMakeCommandHandler>();
 
-        var result1 = await handler.ExecuteAsync(new()
-        {
-            Name = name
-        });
-
-        var result2 = await handler.ExecuteAsync(new()
-        {
-            Name = name
-        });
+        var result1 = await handler.ExecuteAsync(new() { Name = name });
+        var result2 = await handler.ExecuteAsync(new() { Name = name });
 
         Assert.True(result1.IsValid);
         Assert.False(result2.IsValid);

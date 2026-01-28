@@ -6,7 +6,6 @@ namespace VehicleTaxonomy.Domain.Tests.Makes.Commands;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class DeleteMakeCommandHandlerTests
 {
-    private const string UniquePrefix = "DelMakeCH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public DeleteMakeCommandHandlerTests(DbDependentFixture dbDependentFixture)
@@ -17,17 +16,14 @@ public class DeleteMakeCommandHandlerTests
     [Fact]
     public async Task CanDelete()
     {
-        const string name = UniquePrefix + nameof(CanDelete);
+        var name = ScopedString.FromMethodName(50);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<DeleteMakeCommandHandler>();
         var makeTestHelper = scope.ServiceProvider.GetRequiredService<MakeTestHelper>();
         var id = await makeTestHelper.AddMakeAsync(name);
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            MakeId = id
-        });
+        var result = await handler.ExecuteAsync(new() { MakeId = id });
 
         var dbRecord = await makeTestHelper.GetRawDocumentAsync(id);
 
@@ -47,10 +43,7 @@ public class DeleteMakeCommandHandlerTests
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<DeleteMakeCommandHandler>();
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            MakeId = name!
-        });
+        var result = await handler.ExecuteAsync(new() { MakeId = name! });
 
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);
@@ -61,15 +54,12 @@ public class DeleteMakeCommandHandlerTests
     [Fact]
     public async Task WhenNotExists_ReturnsError()
     {
-        const string name = UniquePrefix + nameof(WhenNotExists_ReturnsError);
+        var name = ScopedString.FromMethodName(50);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<DeleteMakeCommandHandler>();
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            MakeId = EntityIdFormatter.Format(name)
-        });
+        var result = await handler.ExecuteAsync(new() { MakeId = EntityIdFormatter.Format(name) });
 
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);

@@ -6,7 +6,6 @@ namespace VehicleTaxonomy.Domain.Tests.Makes.Queries;
 [Collection(nameof(DbDependentFixtureCollection))]
 public class IsMakeUniqueQueryHandlerTests
 {
-    private const string UniquePrefix = "IsMakeUniqueQH_";
     private readonly DbDependentFixture _dbDependentFixture;
 
     public IsMakeUniqueQueryHandlerTests(DbDependentFixture dbDependentFixture)
@@ -17,15 +16,12 @@ public class IsMakeUniqueQueryHandlerTests
     [Fact]
     public async Task WhenUnique_ReturnsTrue()
     {
-        const string name = UniquePrefix + nameof(WhenUnique_ReturnsTrue);
+        var name = ScopedString.FromMethodName(50);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsMakeUniqueQueryHandler>();
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            Name = name
-        });
+        var result = await handler.ExecuteAsync(new() { Name = name });
 
         Assert.True(result.IsValid);
         Assert.True(result.Result);
@@ -42,10 +38,7 @@ public class IsMakeUniqueQueryHandlerTests
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsMakeUniqueQueryHandler>();
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            Name = name!
-        });
+        var result = await handler.ExecuteAsync(new() { Name = name! });
 
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);
@@ -58,7 +51,7 @@ public class IsMakeUniqueQueryHandlerTests
     [Fact]
     public async Task WhenNameNotUnique_ReturnsFalse()
     {
-        const string name = UniquePrefix + nameof(WhenNameNotUnique_ReturnsFalse);
+        var name = ScopedString.FromMethodName(50);
 
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<IsMakeUniqueQueryHandler>();
@@ -66,10 +59,7 @@ public class IsMakeUniqueQueryHandlerTests
 
         await makeTestHelper.AddMakeAsync(name);
 
-        var result = await handler.ExecuteAsync(new()
-        {
-            Name = name
-        });
+        var result = await handler.ExecuteAsync(new() { Name = name });
 
         Assert.True(result.IsValid);
         Assert.False(result.Result);

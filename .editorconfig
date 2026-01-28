@@ -57,6 +57,12 @@ dotnet_naming_symbols.private_internal_fields.applicable_accessibilities = priva
 dotnet_naming_style.camel_case_underscore_style.required_prefix = _
 dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
 
+# Rider formatting
+csharp_max_array_initializer_elements_on_line = 1
+csharp_max_initializer_elements_on_line = 0
+csharp_indent_raw_literal_string = do_not_change
+# indent_text = false
+
 [*.{xml,config,*proj,nuspec,props,resx,targets,yml,tasks}]
 indent_size = 2
 

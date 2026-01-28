@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="FluentValidation" Version="12.1.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1"/>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\VehicleTaxonomy.Infrastructure\VehicleTaxonomy.Infrastructure.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VehicleTaxonomy.Infrastructure\VehicleTaxonomy.Infrastructure.csproj"/>
+  </ItemGroup>
 </Project>
