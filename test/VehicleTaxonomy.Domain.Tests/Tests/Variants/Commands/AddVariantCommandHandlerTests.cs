@@ -8,22 +8,22 @@ namespace VehicleTaxonomy.Domain.Tests.Variants.Commands;
 public class AddVariantCommandHandlerTests
 {
     private readonly DbDependentFixture _dbDependentFixture;
-
+    
     public AddVariantCommandHandlerTests(DbDependentFixture dbDependentFixture)
     {
         _dbDependentFixture = dbDependentFixture;
     }
-
+    
     [Fact]
     public async Task WhenValid_CanAdd()
     {
         var name = ScopedString.FromMethodName(50);
         var id = EntityIdFormatter.Format(name);
-
+        
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
-
+        
         var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name);
         var result = await handler.ExecuteAsync(new()
         {
@@ -31,13 +31,13 @@ public class AddVariantCommandHandlerTests
             ModelId = modelId,
             Name = name
         });
-
+        
         var dbRecord = await variantTestHelper.GetRawDocumentAsync(makeId, modelId, id);
-
+        
         Assert.True(result.IsValid);
         Assert.Equal(id, result.Result.Id);
         Assert.NotNull(dbRecord);
-
+        
         InlineSnapshot
             .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
             .Validate(dbRecord, """
@@ -49,17 +49,17 @@ public class AddVariantCommandHandlerTests
                 VariantData: {}
                 """);
     }
-
+    
     [Fact]
     public async Task CanAddWithOptionalProperties()
     {
         var name = ScopedString.FromMethodName(48);
         var id = EntityIdFormatter.Format(name);
-
+        
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
-
+        
         var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name);
         var result = await handler.ExecuteAsync(new()
         {
@@ -69,12 +69,12 @@ public class AddVariantCommandHandlerTests
             EngineSizeInCC = 4300,
             FuelCategory = FuelCategory.Petrol
         });
-
+        
         var dbRecord = await variantTestHelper.GetRawDocumentAsync(makeId, modelId, id);
-
+        
         Assert.True(result.IsValid);
         Assert.NotNull(dbRecord);
-
+        
         InlineSnapshot
             .WithSettings(InlineSnapshotSettingsLibrary.IgnoreDefaultOrEmptyCollection)
             .Validate(dbRecord, """
@@ -88,32 +88,32 @@ public class AddVariantCommandHandlerTests
                   EngineSizeInCC: 4300
                 """);
     }
-
+    
     [Fact]
     public async Task WhenModelNotExists_ReturnsError()
     {
         var name = ScopedString.FromMethodName(50);
         var id = EntityIdFormatter.Format(name);
-
+        
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
-
+        
         var result = await handler.ExecuteAsync(new()
         {
             MakeId = id,
             ModelId = id,
-            Name = id
+            Name = name
         });
-
+        
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);
-
+        
         var error = result.ValidationErrors.First();
         Assert.Equal(nameof(AddVariantCommand.ModelId), error.Property);
         Assert.Contains("Model does not exist", error.Message);
         Assert.Null(result.Result);
     }
-
+    
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -125,22 +125,22 @@ public class AddVariantCommandHandlerTests
     {
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
-
+        
         var result = await handler.ExecuteAsync(new()
         {
             MakeId = "na",
             ModelId = id!,
             Name = "na"
         });
-
+        
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);
-
+        
         var error = result.ValidationErrors.First();
         Assert.Equal(nameof(AddVariantCommand.ModelId), error.Property);
         Assert.Null(result.Result);
     }
-
+    
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -152,51 +152,51 @@ public class AddVariantCommandHandlerTests
     {
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
-
+        
         var result = await handler.ExecuteAsync(new()
         {
             MakeId = "na",
             ModelId = "na",
             Name = name!
         });
-
+        
         Assert.False(result.IsValid);
         Assert.Single(result.ValidationErrors);
-
+        
         var error = result.ValidationErrors.First();
         Assert.Equal(nameof(AddVariantCommand.Name), error.Property);
         Assert.Null(result.Result);
     }
-
+    
     [Fact]
     public async Task WhenNameNotUnique_ReturnsError()
     {
         var name = ScopedString.FromMethodName(48);
-
+        
         using var scope = _dbDependentFixture.ServiceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<AddVariantCommandHandler>();
         var variantTestHelper = scope.ServiceProvider.GetRequiredService<VariantTestHelper>();
-
+        
         var (makeId, modelId) = await variantTestHelper.AddModelWithMakeAsync(name + "mk");
-
+        
         var result1 = await handler.ExecuteAsync(new()
         {
             MakeId = makeId,
             ModelId = modelId,
             Name = name
         });
-
+        
         var result2 = await handler.ExecuteAsync(new()
         {
             MakeId = makeId,
             ModelId = modelId,
             Name = name
         });
-
+        
         Assert.True(result1.IsValid);
         Assert.False(result2.IsValid);
         Assert.Single(result2.ValidationErrors);
-
+        
         var error = result2.ValidationErrors.First();
         Assert.Equal(nameof(AddVariantCommand.Name), error.Property);
         Assert.Contains("already exists", error.Message);
